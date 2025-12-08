@@ -56,64 +56,58 @@
 </div>
 
 <script>
-    // --- 1. DỮ LIỆU & CẤU HÌNH THÔNG MINH ---
-    /*
-      - word: Từ hiển thị trên màn hình
-      - ipa: Phiên âm
-      - img: Tên file ảnh
-      - speakText: (Mẹo) Từ để máy đọc đúng âm (nếu từ gốc bị đọc sai)
-      - similar: Danh sách các từ "nghe gần giống" mà vẫn chấm 5 sao (để bé dễ thắng hơn)
-    */
+    // --- CẬP NHẬT TỪ VỰNG & DANH SÁCH MỞ RỘNG ---
     const words = [
         { 
             word: "ear", ipa: "/ɪr/", img: "ear.png", 
             speakText: "ear", 
-            similar: ["year", "here", "ears", "air"] // Ear hay bị nghe nhầm thành Year/Here
+            // Đã thêm "yeah" vào danh sách similar
+            similar: ["year", "here", "ears", "air", "yeah", "hear", "near"] 
         }, 
         { 
             word: "beer", ipa: "/ɪr/", img: "beer.png", 
             speakText: "beer", 
-            similar: ["bear", "beard", "pier"] 
+            similar: ["bear", "beard", "pier", "beers"] 
         }, 
         { 
             word: "deer", ipa: "/ɪr/", img: "deer.png", 
             speakText: "deer", 
-            similar: ["dear", "dare", "tear"] 
+            similar: ["dear", "dare", "tear", "there"] 
         }, 
         { 
             word: "cheer", ipa: "/ɪr/", img: "cheer.png", 
             speakText: "cheer", 
-            similar: ["chair", "cheers", "sheer"] 
+            similar: ["chair", "cheers", "sheer", "chia"] 
         }, 
         { 
             word: "tear", ipa: "/ɪr/", img: "tear.png", 
-            speakText: "tier", // <--- MẸO: Đọc là "tier" để ra âm /ɪr/ (nước mắt)
-            similar: ["tier", "tea", "here"] 
+            speakText: "tier", // Mẹo đọc đúng âm /ɪr/
+            similar: ["tier", "tea", "here", "tears"] 
         }, 
         { 
             word: "bear", ipa: "/ɛr/", img: "bear.png", 
             speakText: "bear", 
-            similar: ["bare", "beer", "pair"] 
+            similar: ["bare", "beer", "pair", "bears", "bar"] 
         }, 
         { 
             word: "pear", ipa: "/ɛr/", img: "pear.png", 
             speakText: "pear", 
-            similar: ["pair", "pare", "bear"] 
+            similar: ["pair", "pare", "bear", "pears"] 
         }, 
         { 
             word: "share", ipa: "/ɛr/", img: "share.png", 
             speakText: "share", 
-            similar: ["chair", "sure", "cher"] 
+            similar: ["chair", "sure", "cher", "shared"] 
         }, 
         { 
             word: "stair", ipa: "/ɛr/", img: "stair.png", 
             speakText: "stair", 
-            similar: ["stare", "star", "stairs"] 
+            similar: ["stare", "star", "stairs", "stay"] 
         }, 
         { 
             word: "chair", ipa: "/ɛr/", img: "chair.png", 
             speakText: "chair", 
-            similar: ["cheer", "share", "chairs"] 
+            similar: ["cheer", "share", "chairs", "care"] 
         }  
     ];
 
@@ -122,7 +116,6 @@
     let recognitionTimeout;
     let audioWin, audioCorrect, audioWrong;
 
-    // --- 2. HÀM KHỞI TẠO ---
     window.onload = function() {
         try {
             document.getElementById('feedback').innerText = "Sẵn sàng! Bấm nút để học.";
@@ -130,9 +123,7 @@
             audioWin = new Audio("win.mp3");
             audioCorrect = new Audio("correct.mp3");
             audioWrong = new Audio("wrong.mp3");
-        } catch (e) {
-            console.log("Lỗi tải trang: " + e);
-        }
+        } catch (e) {}
     };
 
     function loadWord(index) {
@@ -158,32 +149,21 @@
         if (currentIndex > 0) { currentIndex--; loadWord(currentIndex); }
     }
 
-    // --- 3. NGHE MẪU (Dùng từ thay thế để phát âm chuẩn) ---
     function playSampleSafe() {
         try {
             window.speechSynthesis.cancel();
-            
-            // Dùng từ speakText để đọc (ví dụ Tear -> đọc là Tier)
             const textToSpeak = words[currentIndex].speakText || words[currentIndex].word;
-            
             const utterance = new SpeechSynthesisUtterance(textToSpeak);
             utterance.lang = 'en-US';
             utterance.rate = 0.8;
-            
-            utterance.onerror = function(e) { 
-                document.getElementById('feedback').innerText = "Lỗi đọc (Kiểm tra loa).";
-            }
             window.speechSynthesis.speak(utterance);
-        } catch (e) {
-            alert("Lỗi nút nghe: " + e.message);
-        }
+        } catch (e) {}
     }
 
-    // --- 4. MIC & LOGIC CHẤM ĐIỂM THÔNG MINH ---
     function startListeningSafe() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
-            alert("Lỗi: Hãy dùng Google Chrome (Android) hoặc Safari (iPhone).");
+            alert("Hãy dùng Google Chrome (Android) hoặc Safari (iPhone) bạn nhé.");
             return;
         }
 
@@ -193,43 +173,41 @@
             recognition = new SpeechRecognition();
             recognition.lang = 'en-US';
             recognition.interimResults = false;
-            recognition.maxAlternatives = 5; // Lấy 5 phương án máy nghe được để tăng cơ hội đúng
+            recognition.maxAlternatives = 10; // Tăng lên 10 để bắt được nhiều biến thể hơn
             recognition.continuous = false;
 
             document.getElementById('mic-btn').innerText = "👂 Đang nghe...";
             document.getElementById('mic-btn').className = "btn btn-mic listening";
             document.getElementById('mic-btn').disabled = true;
-            document.getElementById('feedback').innerText = "Bạn đọc to lên nhé...";
+            document.getElementById('feedback').innerText = "Bạn đọc bình thường, đừng hét nhé...";
 
             recognition.start();
 
+            // Tăng thời gian chờ lên 8 giây
             clearTimeout(recognitionTimeout);
             recognitionTimeout = setTimeout(() => {
                 try { recognition.stop(); } catch(e){}
-                document.getElementById('feedback').innerText = "Hết giờ! Bạn thử lại nhé.";
+                document.getElementById('feedback').innerText = "Hết giờ! Bạn đọc lại nhé.";
                 resetBtn();
-            }, 5000);
+            }, 8000); 
 
             recognition.onresult = function(event) {
                 clearTimeout(recognitionTimeout);
-                
-                // Lấy danh sách tất cả các từ máy nghe được (hy vọng có từ đúng trong đó)
                 let heardWords = [];
                 for(let i = 0; i < event.results[0].length; i++) {
                     heardWords.push(event.results[0][i].transcript.toLowerCase());
                 }
-                
                 checkResultSmart(heardWords);
             };
 
             recognition.onerror = function(event) {
                 clearTimeout(recognitionTimeout);
                 if (event.error === 'not-allowed') {
-                    alert("Bạn hãy bấm 'Cho phép' Micro nhé.");
+                    alert("Cần cấp quyền Micro để học.");
                 } else if (event.error === 'no-speech') {
-                    document.getElementById('feedback').innerText = "Không nghe thấy tiếng...";
+                    // Đổi thông báo để bé hiểu cách đọc
+                    document.getElementById('feedback').innerText = "Máy chưa nghe rõ. Bạn để mic gần hơn nhé!";
                 } else {
-                    // Các lỗi khác thì bỏ qua cho bé đỡ sợ, chỉ reset nút
                     document.getElementById('feedback').innerText = "Thử lại nào!";
                 }
                 resetBtn();
@@ -246,14 +224,12 @@
         }
     }
 
-    // --- LOGIC CHẤM ĐIỂM MỚI (DỄ HƠN) ---
     function checkResultSmart(heardWords) {
         const currentData = words[currentIndex];
         const targetWord = currentData.word.toLowerCase();
-        const validList = currentData.similar || []; // Danh sách các từ chấp nhận được
+        const validList = currentData.similar || [];
         
-        // 1. Kiểm tra 5 sao: Nếu từ đúng NẰM TRONG những gì máy nghe được
-        // Hoặc máy nghe ra từ nằm trong danh sách "gần giống" (similar)
+        // Kiểm tra 5 sao
         let isPerfect = heardWords.some(w => w.includes(targetWord) || validList.includes(w));
 
         if (isPerfect) {
@@ -261,13 +237,11 @@
             return;
         }
 
-        // 2. Kiểm tra 3-4 sao: Lấy từ rõ nhất máy nghe được để so sánh âm đầu
+        // Kiểm tra 4 sao (âm đầu)
         let bestGuess = heardWords[0];
         if (bestGuess.charAt(0) === targetWord.charAt(0)) {
-             // Đúng âm đầu -> Cho 4 sao khích lệ (Thay vì 3)
             showResult(4, "Gần đúng rồi! (" + bestGuess + ")");
         } else {
-            // Sai hoàn toàn -> Cho 2 sao an ủi (Thay vì 1)
             showResult(2, "Cố lên! Máy nghe là: " + bestGuess);
         }
     }
@@ -299,11 +273,9 @@
             let soundToPlay;
             if (starCount === 5) soundToPlay = audioWin;
             else if (starCount >= 3) soundToPlay = audioCorrect;
-            else soundToPlay = audioWrong; // 1-2 sao phát nhạc sai
+            else soundToPlay = audioWrong;
 
-            if(soundToPlay) {
-                soundToPlay.play().catch(e => console.log("Audio play err"));
-            }
+            if(soundToPlay) soundToPlay.play().catch(e => {});
         } catch (e) {}
     }
 </script>
