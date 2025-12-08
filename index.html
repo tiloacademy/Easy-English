@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Vui học âm /ɪr/, /ɛr/ </title>
+    <style>
+        body { font-family: 'Comic Sans MS', 'Arial', sans-serif; background-color: #e0f7fa; text-align: center; padding: 20px; }
+        .card { background: white; border-radius: 25px; padding: 30px; max-width: 450px; margin: 0 auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 6px solid #FFD700; position: relative; }
+        
+        /* Khung hình ảnh */
+        .img-box { width: 220px; height: 220px; margin: 0 auto; overflow: hidden; border-radius: 15px; border: 3px dashed #ddd; }
+        img { width: 100%; height: 100%; object-fit: contain; }
+        
+        h1 { color: #ff6f00; font-size: 24px; margin-bottom: 5px; }
+        h2 { color: #333; font-size: 45px; margin: 10px 0; letter-spacing: 2px; }
+        
+        /* Các nút bấm */
+        .btn { border: none; border-radius: 50px; cursor: pointer; margin: 10px; box-shadow: 0 5px rgba(0,0,0,0.2); transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; }
+        .btn:active { transform: translateY(3px); box-shadow: 0 2px rgba(0,0,0,0.2); }
+        .btn:disabled { background-color: #ccc !important; cursor: not-allowed; box-shadow: none; }
+
+        .btn-mic { background-color: #4CAF50; color: white; padding: 15px 40px; font-size: 22px; width: 80%; }
+        .btn-sample { background-color: #2196F3; color: white; padding: 10px 20px; font-size: 16px; }
+        .btn-nav { background-color: #FF9800; color: white; padding: 10px 20px; font-size: 18px; width: 40px; height: 40px; border-radius: 50%; }
+
+        .stars { font-size: 50px; color: #FFD700; height: 65px; margin: 10px 0; text-shadow: 2px 2px 0px #fff, -1px -1px 0 #bbb; }
+        .feedback { font-size: 18px; color: #555; height: 30px; margin-bottom: 15px; font-style: italic; }
+        .phonetic { color: #888; font-size: 22px; margin-bottom: 15px; font-family: 'Times New Roman', serif; }
+        
+        /* Hiệu ứng khi đang nghe */
+        .listening { animation: pulse 1.5s infinite; background-color: #ff5722 !important; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>🐻 Học phát âm thật vui🐰</h1>
+    
+    <div class="img-box">
+        <img id="word-img" src="" alt="Word Image">
+    </div>
+
+    <h2 id="word-text">WORD</h2>
+    <div class="phonetic" id="phonetic">/IPA/</div>
+
+    <button class="btn btn-sample" onclick="playSample()">🔊 Lắng nghe </button>
+
+    <div class="stars" id="stars">☆☆☆☆☆</div>
+    <div class="feedback" id="feedback">Bạn hãy bấm nút xanh và đọc to nhé!</div>
+
+    <button id="mic-btn" class="btn btn-mic" onclick="startListening()">🎤 Đọc Ngay</button>
+
+    <div style="margin-top: 25px; display: flex; justify-content: space-between; padding: 0 20px;">
+        <button class="btn btn-nav" onclick="prevWord()">◀</button>
+        <button class="btn btn-nav" onclick="nextWord()">▶</button>
+    </div>
+</div>
+
+<script>
+    // Dữ liệu từ vựng (Bạn có thể thay link ảnh tại đây)
+    const words = [
+        { word: "ear", ipa: "/ɪr/", img: "https://img.freepik.com/free-vector/human-ear_1308-83956.jpg?w=360" }, 
+        { word: "beer", ipa: "/ɪr/", img: "https://cdn-icons-png.flaticon.com/512/2405/2405451.png" }, 
+        { word: "deer", ipa: "/ɪr/", img: "https://cdn-icons-png.flaticon.com/512/2298/2298357.png" }, 
+        { word: "cheer", ipa: "/ɪr/", img: "https://cdn-icons-png.flaticon.com/512/3404/3404134.png" }, 
+        { word: "tear", ipa: "/ɪr/", img: "https://cdn-icons-png.flaticon.com/512/565/565646.png" }, 
+        { word: "bear", ipa: "/ɛr/", img: "https://cdn-icons-png.flaticon.com/512/3069/3069188.png" }, 
+        { word: "pear", ipa: "/ɛr/", img: "https://cdn-icons-png.flaticon.com/512/2909/2909808.png" }, 
+        { word: "share", ipa: "/ɛr/", img: "https://cdn-icons-png.flaticon.com/512/1660/1660144.png" }, 
+        { word: "stair", ipa: "/ɛr/", img: "https://cdn-icons-png.flaticon.com/512/3023/3023455.png" }, 
+        { word: "chair", ipa: "/ɛr/", img: "https://cdn-icons-png.flaticon.com/512/2662/2662649.png" }  
+    ];
+
+    let currentIndex = 0;
+
+    // Âm thanh phản hồi (Sử dụng link âm thanh công cộng của Google)
+    const soundEffects = {
+        win: new Audio("https://actions.google.com/sounds/v1/cartoon/clank_car_crash.ogg"), // Tiếng leng keng vui tai (tạm thay thế vì file nhỏ)
+        correct: new Audio("https://actions.google.com/sounds/v1/cartoon/pop_cork.ogg"), // Tiếng bốp nhẹ
+        wrong: new Audio("https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg") // Tiếng boing
+    };
+
+    // Hàm load từ mới
+    function loadWord(index) {
+        document.getElementById('word-text').innerText = words[index].word.toUpperCase();
+        document.getElementById('phonetic').innerText = words[index].ipa;
+        document.getElementById('word-img').src = words[index].img;
+        resetState();
+    }
+
+    function resetState() {
+        document.getElementById('stars').innerText = "☆☆☆☆☆";
+        document.getElementById('feedback').innerText = "Sẵn sàng...";
+        document.getElementById('mic-btn').disabled = false;
+        document.getElementById('mic-btn').className = "btn btn-mic";
+        document.getElementById('mic-btn').innerText = "🎤 Đọc Ngay";
+    }
+
+    function nextWord() {
+        if (currentIndex < words.length - 1) { currentIndex++; loadWord(currentIndex); }
+    }
+
+    function prevWord() {
+        if (currentIndex > 0) { currentIndex--; loadWord(currentIndex); }
+    }
+
+    // 1. CHỨC NĂNG NGHE MẪU (Mới)
+    function playSample() {
+        const text = words[currentIndex].word;
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US'; // Giọng Mỹ
+        utterance.rate = 0.8; // Đọc chậm một chút cho bé nghe rõ
+        window.speechSynthesis.speak(utterance);
+    }
+
+    // 2. LOGIC CHẤM ĐIỂM & PHÁT ÂM THANH
+    function startListening() {
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("Thiết bị này chưa hỗ trợ nhận diện giọng nói. Bạn hãy dùng Chrome trên Android hoặc máy tính nhé!");
+            return;
+        }
+
+        const recognition = new webkitSpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        document.getElementById('mic-btn').innerText = "👂 Đang nghe bạn...";
+        document.getElementById('mic-btn').className = "btn btn-mic listening";
+        document.getElementById('mic-btn').disabled = true;
+
+        recognition.start();
+
+        recognition.onresult = function(event) {
+            const speechResult = event.results[0][0].transcript.toLowerCase();
+            const targetWord = words[currentIndex].word;
+            
+            // Logic so sánh
+            if (speechResult.includes(targetWord)) {
+                // Đọc đúng hoàn toàn
+                showResult(5, "Tuyệt vời! Chính xác 100%! 🎉");
+            } else if (isCloseEnough(speechResult, targetWord)) {
+                // Đọc gần đúng
+                showResult(3, "Khá lắm! Nhưng miệng mở rộng hơn xíu nhé (" + speechResult + ")");
+            } else {
+                // Đọc sai
+                showResult(1, "Ồ chưa đúng rồi. Bạn nghe lại mẫu nhé! (Máy nghe: " + speechResult + ")");
+            }
+        };
+
+        recognition.onerror = function(event) {
+            document.getElementById('feedback').innerText = "Máy chưa nghe rõ, bé đọc to hơn nhé!";
+            document.getElementById('mic-btn').className = "btn btn-mic";
+            document.getElementById('mic-btn').disabled = false;
+            document.getElementById('mic-btn').innerText = "🎤 Thử Lại";
+        };
+
+        recognition.onend = function() {
+           if(document.getElementById('stars').innerText === "☆☆☆☆☆") {
+               document.getElementById('mic-btn').className = "btn btn-mic";
+               document.getElementById('mic-btn').disabled = false;
+               document.getElementById('mic-btn').innerText = "🎤 Đọc Ngay";
+           }
+        };
+    }
+
+    // Hàm kiểm tra gần đúng đơn giản (Check ký tự đầu và cuối)
+    function isCloseEnough(heard, target) {
+        return heard.charAt(0) === target.charAt(0) && heard.length >= target.length - 1;
+    }
+
+    function showResult(starCount, message) {
+        let stars = "";
+        for (let i = 0; i < 5; i++) {
+            stars += (i < starCount) ? "⭐" : "☆";
+        }
+        document.getElementById('stars').innerText = stars;
+        document.getElementById('feedback').innerText = message;
+        
+        // PHÁT ÂM THANH KẾT QUẢ (Mới)
+        if (starCount === 5) {
+            playSound('win'); // Thắng lớn
+        } else if (starCount >= 3) {
+            playSound('correct'); // Khá
+        } else {
+            playSound('wrong'); // Sai
+        }
+
+        document.getElementById('mic-btn').className = "btn btn-mic";
+        document.getElementById('mic-btn').disabled = false;
+        document.getElementById('mic-btn').innerText = "🎤 Đọc Lại";
+    }
+
+    function playSound(type) {
+        // Dừng các âm thanh cũ đang phát (nếu có)
+        soundEffects.win.pause(); soundEffects.win.currentTime = 0;
+        soundEffects.correct.pause(); soundEffects.correct.currentTime = 0;
+        soundEffects.wrong.pause(); soundEffects.wrong.currentTime = 0;
+
+        // Phát âm thanh mới
+        if(type === 'win') soundEffects.win.play();
+        if(type === 'correct') soundEffects.correct.play();
+        if(type === 'wrong') soundEffects.wrong.play();
+    }
+
+    // Khởi chạy
+    loadWord(0);
+</script>
+
+</body>
+</html>
