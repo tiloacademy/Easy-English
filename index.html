@@ -6,13 +6,22 @@
     <title>Học tiếng Anh thật dễ</title>
     <style>
         body { font-family: 'Arial', sans-serif; background-color: #e0f7fa; text-align: center; padding: 15px; }
-        .card { background: white; border-radius: 20px; padding: 20px; max-width: 450px; margin: 0 auto; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 5px solid #FFD700; }
+        .card { background: white; border-radius: 20px; padding: 20px; max-width: 500px; margin: 0 auto; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 5px solid #FFD700; }
         
-        .img-box { width: 220px; height: 220px; margin: 0 auto; overflow: hidden; border-radius: 15px; border: 2px dashed #ddd; background: #fff; }
-        img { width: 100%; height: 100%; object-fit: contain; }
+        .img-box { width: 100%; height: 220px; margin: 0 auto; overflow: hidden; border-radius: 15px; border: 2px dashed #ddd; background: #fff; display: flex; align-items: center; justify-content: center; }
+        img { max-width: 100%; max-height: 100%; object-fit: contain; }
         
         h1 { color: #ff6f00; font-size: 24px; margin: 10px 0; }
-        h2 { color: #333; font-size: 40px; margin: 5px 0; letter-spacing: 2px; }
+        
+        /* Style cho Từ đơn */
+        h2 { color: #333; font-size: 45px; margin: 5px 0; letter-spacing: 2px; }
+        .phonetic { color: #888; font-size: 20px; margin-bottom: 10px; font-family: 'Times New Roman', serif; }
+
+        /* Style mới cho Câu (IPA nằm trên chữ) */
+        .sentence-container { display: none; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 10px 0; }
+        .word-block { display: flex; flex-direction: column; align-items: center; }
+        .ipa-top { color: #ff3b30; font-size: 18px; font-weight: bold; margin-bottom: -5px; font-family: sans-serif; }
+        .text-bottom { color: #000; font-size: 32px; font-weight: normal; }
         
         .btn { border: none; border-radius: 50px; cursor: pointer; margin: 10px 5px; box-shadow: 0 4px #999; transition: 0.1s; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; color: white; }
         .btn:active { transform: translateY(4px); box-shadow: 0 0 #666; }
@@ -24,7 +33,6 @@
 
         .stars { font-size: 40px; color: #FFD700; height: 50px; margin: 5px 0; }
         .feedback { font-size: 16px; color: #555; min-height: 40px; margin-bottom: 10px; font-style: italic; padding: 5px; border: 1px dotted #ccc; border-radius: 5px;}
-        .phonetic { color: #888; font-size: 20px; margin-bottom: 10px; font-family: 'Times New Roman', serif; }
         
         .listening { animation: pulse 1.5s infinite; background-color: #ff5722 !important; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
@@ -36,11 +44,16 @@
     <h1>🐻 Học phát âm 🐰</h1>
     
     <div class="img-box">
-        <img id="word-img" src="" alt="Word Image" onerror="this.onerror=null; this.src='https://via.placeholder.com/200?text=No+Image';">
+        <img id="word-img" src="" alt="Word Image" onerror="this.onerror=null; this.src='https://via.placeholder.com/300x200?text=No+Image';">
     </div>
 
-    <h2 id="word-text">WORD</h2>
-    <div class="phonetic" id="phonetic">/IPA/</div>
+    <div id="single-word-area">
+        <h2 id="word-text">WORD</h2>
+        <div class="phonetic" id="phonetic">/IPA/</div>
+    </div>
+
+    <div id="sentence-area" class="sentence-container">
+        </div>
 
     <button class="btn btn-sample" onclick="playSampleSafe()">🔊 Nghe mẫu</button>
 
@@ -56,59 +69,55 @@
 </div>
 
 <script>
-    // --- CẬP NHẬT TỪ VỰNG & DANH SÁCH MỞ RỘNG ---
-    const words = [
+    // --- CẤU TRÚC DỮ LIỆU MỚI ---
+    /*
+      type: 'word' (từ đơn) hoặc 'sentence' (câu)
+      htmlParts: Dữ liệu để vẽ IPA trên đầu chữ (chỉ dùng cho câu)
+    */
+    const items = [
+        // NHÓM 1: ÂM /ɪr/ (Đã đổi thứ tự: Beer -> Deer -> Cheer -> Tear -> Ear)
+        { word: "beer", ipa: "/ɪr/", img: "beer.png", type: "word", speakText: "beer", similar: ["bear", "beard", "pier", "beers"] }, 
+        { word: "deer", ipa: "/ɪr/", img: "deer.png", type: "word", speakText: "deer", similar: ["dear", "dare", "tear", "there"] }, 
+        { word: "cheer", ipa: "/ɪr/", img: "cheer.png", type: "word", speakText: "cheer", similar: ["chair", "cheers", "sheer", "chia"] }, 
+        { word: "tear", ipa: "/ɪr/", img: "tear.png", type: "word", speakText: "tier", similar: ["tier", "tea", "here", "tears"] }, 
+        { word: "ear", ipa: "/ɪr/", img: "ear.png", type: "word", speakText: "ear", similar: ["year", "here", "ears", "air", "yeah", "hear", "near"] }, 
+        
+        // NHÓM 2: ÂM /ɛr/
+        { word: "bear", ipa: "/ɛr/", img: "bear.png", type: "word", speakText: "bear", similar: ["bare", "beer", "pair", "bears", "bar"] }, 
+        { word: "pear", ipa: "/ɛr/", img: "pear.png", type: "word", speakText: "pear", similar: ["pair", "pare", "bear", "pears"] }, 
+        { word: "share", ipa: "/ɛr/", img: "share.png", type: "word", speakText: "share", similar: ["chair", "sure", "cher", "shared"] }, 
+        { word: "stair", ipa: "/ɛr/", img: "stair.png", type: "word", speakText: "stair", similar: ["stare", "star", "stairs", "stay"] }, 
+        { word: "chair", ipa: "/ɛr/", img: "chair.png", type: "word", speakText: "chair", similar: ["cheer", "share", "chairs", "care"] },
+
+        // NHÓM 3: LUYỆN CÂU (MỚI)
         { 
-            word: "ear", ipa: "/ɪr/", img: "ear.png", 
-            speakText: "ear", 
-            // Đã thêm "yeah" vào danh sách similar
-            similar: ["year", "here", "ears", "air", "yeah", "hear", "near"] 
-        }, 
+            type: "sentence",
+            word: "The deer is near the chair", // Dùng để so sánh kết quả đọc
+            img: "sentence_deer.png", // Bạn cần file ảnh này
+            // Cấu trúc để vẽ IPA trên đầu chữ
+            htmlParts: [
+                {text: "The", ipa: "ðə"},
+                {text: "deer", ipa: "ɪr"},
+                {text: "is", ipa: "ɪz"},
+                {text: "near", ipa: "ɪr"},
+                {text: "the", ipa: "ðə"},
+                {text: "chair.", ipa: "tʃ ɛr"}
+            ],
+            similar: ["the deer is near the chair", "deer near chair", "the dear is near the chair"]
+        },
         { 
-            word: "beer", ipa: "/ɪr/", img: "beer.png", 
-            speakText: "beer", 
-            similar: ["bear", "beard", "pier", "beers"] 
-        }, 
-        { 
-            word: "deer", ipa: "/ɪr/", img: "deer.png", 
-            speakText: "deer", 
-            similar: ["dear", "dare", "tear", "there"] 
-        }, 
-        { 
-            word: "cheer", ipa: "/ɪr/", img: "cheer.png", 
-            speakText: "cheer", 
-            similar: ["chair", "cheers", "sheer", "chia"] 
-        }, 
-        { 
-            word: "tear", ipa: "/ɪr/", img: "tear.png", 
-            speakText: "tier", // Mẹo đọc đúng âm /ɪr/
-            similar: ["tier", "tea", "here", "tears"] 
-        }, 
-        { 
-            word: "bear", ipa: "/ɛr/", img: "bear.png", 
-            speakText: "bear", 
-            similar: ["bare", "beer", "pair", "bears", "bar"] 
-        }, 
-        { 
-            word: "pear", ipa: "/ɛr/", img: "pear.png", 
-            speakText: "pear", 
-            similar: ["pair", "pare", "bear", "pears"] 
-        }, 
-        { 
-            word: "share", ipa: "/ɛr/", img: "share.png", 
-            speakText: "share", 
-            similar: ["chair", "sure", "cher", "shared"] 
-        }, 
-        { 
-            word: "stair", ipa: "/ɛr/", img: "stair.png", 
-            speakText: "stair", 
-            similar: ["stare", "star", "stairs", "stay"] 
-        }, 
-        { 
-            word: "chair", ipa: "/ɛr/", img: "chair.png", 
-            speakText: "chair", 
-            similar: ["cheer", "share", "chairs", "care"] 
-        }  
+            type: "sentence",
+            word: "The bear shares the pear",
+            img: "sentence_bear.png", // Bạn cần file ảnh này
+            htmlParts: [
+                {text: "The", ipa: "ðə"},
+                {text: "bear", ipa: "ɛr"},
+                {text: "shares", ipa: "ʃ ɛr"},
+                {text: "the", ipa: "ðə"},
+                {text: "pear.", ipa: "ɛr"}
+            ],
+            similar: ["the bear shares the pear", "bear shares pear", "the bear share the pear"]
+        }
     ];
 
     let currentIndex = 0;
@@ -119,17 +128,43 @@
     window.onload = function() {
         try {
             document.getElementById('feedback').innerText = "Sẵn sàng! Bấm nút để học.";
-            loadWord(0);
+            loadItem(0);
             audioWin = new Audio("win.mp3");
             audioCorrect = new Audio("correct.mp3");
             audioWrong = new Audio("wrong.mp3");
         } catch (e) {}
     };
 
-    function loadWord(index) {
-        document.getElementById('word-text').innerText = words[index].word.toUpperCase();
-        document.getElementById('phonetic').innerText = words[index].ipa;
-        document.getElementById('word-img').src = words[index].img;
+    function loadItem(index) {
+        const item = items[index];
+        document.getElementById('word-img').src = item.img;
+        
+        // Xử lý hiển thị giao diện tùy theo là Từ hay Câu
+        if (item.type === 'sentence') {
+            document.getElementById('single-word-area').style.display = 'none';
+            document.getElementById('sentence-area').style.display = 'flex';
+            
+            // Vẽ HTML cho câu có IPA trên đầu
+            const container = document.getElementById('sentence-area');
+            container.innerHTML = ''; // Xóa cũ
+            item.htmlParts.forEach(part => {
+                const block = document.createElement('div');
+                block.className = 'word-block';
+                block.innerHTML = `
+                    <div class="ipa-top">${part.ipa}</div>
+                    <div class="text-bottom">${part.text}</div>
+                `;
+                container.appendChild(block);
+            });
+
+        } else {
+            // Giao diện từ đơn bình thường
+            document.getElementById('single-word-area').style.display = 'block';
+            document.getElementById('sentence-area').style.display = 'none';
+            document.getElementById('word-text').innerText = item.word.toUpperCase();
+            document.getElementById('phonetic').innerText = item.ipa;
+        }
+
         resetState();
     }
 
@@ -142,20 +177,23 @@
     }
 
     function nextWord() {
-        if (currentIndex < words.length - 1) { currentIndex++; loadWord(currentIndex); }
+        if (currentIndex < items.length - 1) { currentIndex++; loadItem(currentIndex); }
     }
 
     function prevWord() {
-        if (currentIndex > 0) { currentIndex--; loadWord(currentIndex); }
+        if (currentIndex > 0) { currentIndex--; loadItem(currentIndex); }
     }
 
     function playSampleSafe() {
         try {
             window.speechSynthesis.cancel();
-            const textToSpeak = words[currentIndex].speakText || words[currentIndex].word;
+            const item = items[currentIndex];
+            // Với câu, máy đọc nguyên câu. Với từ, đọc theo từ gợi ý (để chuẩn âm)
+            const textToSpeak = item.speakText || item.word;
+            
             const utterance = new SpeechSynthesisUtterance(textToSpeak);
             utterance.lang = 'en-US';
-            utterance.rate = 0.8;
+            utterance.rate = item.type === 'sentence' ? 0.7 : 0.8; // Đọc câu chậm hơn xíu
             window.speechSynthesis.speak(utterance);
         } catch (e) {}
     }
@@ -163,7 +201,7 @@
     function startListeningSafe() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
-            alert("Hãy dùng Google Chrome (Android) hoặc Safari (iPhone) bạn nhé.");
+            alert("Bạn hãy dùng Google Chrome (Android) hoặc Safari (iPhone) nhé.");
             return;
         }
 
@@ -173,23 +211,25 @@
             recognition = new SpeechRecognition();
             recognition.lang = 'en-US';
             recognition.interimResults = false;
-            recognition.maxAlternatives = 10; // Tăng lên 10 để bắt được nhiều biến thể hơn
+            recognition.maxAlternatives = 10;
             recognition.continuous = false;
 
             document.getElementById('mic-btn').innerText = "👂 Đang nghe...";
             document.getElementById('mic-btn').className = "btn btn-mic listening";
             document.getElementById('mic-btn').disabled = true;
-            document.getElementById('feedback').innerText = "Bạn đọc bình thường, đừng hét nhé...";
+            document.getElementById('feedback').innerText = "Bạn đọc to và rõ ràng nhé...";
 
             recognition.start();
 
-            // Tăng thời gian chờ lên 8 giây
+            // Với câu dài, tăng thời gian chờ lên 10 giây
+            const waitTime = items[currentIndex].type === 'sentence' ? 10000 : 8000;
+
             clearTimeout(recognitionTimeout);
             recognitionTimeout = setTimeout(() => {
                 try { recognition.stop(); } catch(e){}
-                document.getElementById('feedback').innerText = "Hết giờ! Bạn đọc lại nhé.";
+                document.getElementById('feedback').innerText = "Hết giờ! Bạn thử lại nhé.";
                 resetBtn();
-            }, 8000); 
+            }, waitTime); 
 
             recognition.onresult = function(event) {
                 clearTimeout(recognitionTimeout);
@@ -205,7 +245,6 @@
                 if (event.error === 'not-allowed') {
                     alert("Cần cấp quyền Micro để học.");
                 } else if (event.error === 'no-speech') {
-                    // Đổi thông báo để bé hiểu cách đọc
                     document.getElementById('feedback').innerText = "Máy chưa nghe rõ. Bạn để mic gần hơn nhé!";
                 } else {
                     document.getElementById('feedback').innerText = "Thử lại nào!";
@@ -225,24 +264,47 @@
     }
 
     function checkResultSmart(heardWords) {
-        const currentData = words[currentIndex];
-        const targetWord = currentData.word.toLowerCase();
+        const currentData = items[currentIndex];
+        const targetText = currentData.word.toLowerCase();
+        // Loại bỏ dấu chấm câu để so sánh dễ hơn
+        const cleanTarget = targetText.replace(/[.,]/g, "");
         const validList = currentData.similar || [];
         
-        // Kiểm tra 5 sao
-        let isPerfect = heardWords.some(w => w.includes(targetWord) || validList.includes(w));
+        // 1. Kiểm tra chính xác (5 sao)
+        let isPerfect = heardWords.some(w => {
+            const cleanHeard = w.replace(/[.,]/g, "");
+            return cleanHeard.includes(cleanTarget) || validList.includes(cleanHeard);
+        });
 
         if (isPerfect) {
             showResult(5, "Tuyệt vời! Chính xác! 🎉");
             return;
         }
 
-        // Kiểm tra 4 sao (âm đầu)
+        // 2. Logic chấm điểm tương đối
         let bestGuess = heardWords[0];
-        if (bestGuess.charAt(0) === targetWord.charAt(0)) {
-            showResult(4, "Gần đúng rồi! (" + bestGuess + ")");
+        
+        if (currentData.type === 'sentence') {
+            // VỚI CÂU: Kiểm tra xem có đọc đúng được > 50% số từ không
+            const targetWordsArr = cleanTarget.split(" ");
+            const heardWordsArr = bestGuess.split(" ");
+            let matchCount = 0;
+            targetWordsArr.forEach(tw => {
+                if (bestGuess.includes(tw)) matchCount++;
+            });
+
+            if (matchCount >= targetWordsArr.length / 2) {
+                showResult(3, "Khá lắm! (" + bestGuess + ")");
+            } else {
+                showResult(2, "Cố lên! Máy nghe là: " + bestGuess);
+            }
         } else {
-            showResult(2, "Cố lên! Máy nghe là: " + bestGuess);
+            // VỚI TỪ ĐƠN (như cũ)
+            if (bestGuess.charAt(0) === targetText.charAt(0)) {
+                showResult(4, "Gần đúng rồi! (" + bestGuess + ")");
+            } else {
+                showResult(2, "Cố lên! Máy nghe là: " + bestGuess);
+            }
         }
     }
 
