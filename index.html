@@ -5,27 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Học tiếng Anh thật dễ</title>
     <style>
-        body { font-family: 'Comic Sans MS', 'Arial', sans-serif; background-color: #e0f7fa; text-align: center; padding: 20px; }
-        .card { background: white; border-radius: 25px; padding: 30px; max-width: 450px; margin: 0 auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 6px solid #FFD700; position: relative; }
+        body { font-family: 'Arial', sans-serif; background-color: #e0f7fa; text-align: center; padding: 15px; }
+        .card { background: white; border-radius: 20px; padding: 20px; max-width: 450px; margin: 0 auto; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 5px solid #FFD700; }
         
-        .img-box { width: 220px; height: 220px; margin: 0 auto; overflow: hidden; border-radius: 15px; border: 3px dashed #ddd; background: #fff; }
+        .img-box { width: 220px; height: 220px; margin: 0 auto; overflow: hidden; border-radius: 15px; border: 2px dashed #ddd; background: #fff; }
         img { width: 100%; height: 100%; object-fit: contain; }
         
-        /* Đã sửa H1 theo yêu cầu */
-        h1 { color: #ff6f00; font-size: 28px; margin-bottom: 5px; }
-        h2 { color: #333; font-size: 45px; margin: 10px 0; letter-spacing: 2px; }
+        h1 { color: #ff6f00; font-size: 24px; margin: 10px 0; }
+        h2 { color: #333; font-size: 40px; margin: 5px 0; letter-spacing: 2px; }
         
-        .btn { border: none; border-radius: 50px; cursor: pointer; margin: 10px; box-shadow: 0 5px rgba(0,0,0,0.2); transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; }
-        .btn:active { transform: translateY(3px); box-shadow: 0 2px rgba(0,0,0,0.2); }
-        .btn:disabled { background-color: #ccc !important; cursor: not-allowed; box-shadow: none; }
+        .btn { border: none; border-radius: 50px; cursor: pointer; margin: 10px 5px; box-shadow: 0 4px #999; transition: 0.1s; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; color: white; }
+        .btn:active { transform: translateY(4px); box-shadow: 0 0 #666; }
+        .btn:disabled { background-color: #ccc !important; color: #666; cursor: not-allowed; box-shadow: none; transform: none; }
 
-        .btn-mic { background-color: #4CAF50; color: white; padding: 15px 40px; font-size: 22px; width: 80%; }
-        .btn-sample { background-color: #2196F3; color: white; padding: 10px 20px; font-size: 16px; }
-        .btn-nav { background-color: #FF9800; color: white; padding: 10px 20px; font-size: 18px; width: 40px; height: 40px; border-radius: 50%; }
+        .btn-mic { background-color: #4CAF50; padding: 15px 30px; font-size: 20px; width: 80%; }
+        .btn-sample { background-color: #2196F3; padding: 10px 20px; font-size: 16px; }
+        .btn-nav { background-color: #FF9800; padding: 10px; font-size: 18px; width: 45px; height: 45px; border-radius: 50%; }
 
-        .stars { font-size: 50px; color: #FFD700; height: 65px; margin: 10px 0; text-shadow: 2px 2px 0px #fff, -1px -1px 0 #bbb; }
-        .feedback { font-size: 18px; color: #555; height: 30px; margin-bottom: 15px; font-style: italic; }
-        .phonetic { color: #888; font-size: 22px; margin-bottom: 15px; font-family: 'Times New Roman', serif; }
+        .stars { font-size: 40px; color: #FFD700; height: 50px; margin: 5px 0; }
+        .feedback { font-size: 16px; color: #555; min-height: 40px; margin-bottom: 10px; font-style: italic; padding: 5px; border: 1px dotted #ccc; border-radius: 5px;}
+        .phonetic { color: #888; font-size: 20px; margin-bottom: 10px; font-family: 'Times New Roman', serif; }
         
         .listening { animation: pulse 1.5s infinite; background-color: #ff5722 !important; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
@@ -37,27 +36,27 @@
     <h1>🐻 Học phát âm 🐰</h1>
     
     <div class="img-box">
-        <img id="word-img" src="" alt="Word Image" onerror="this.src='https://via.placeholder.com/200?text=No+Image'">
+        <img id="word-img" src="" alt="Word Image" onerror="this.onerror=null; this.src='https://via.placeholder.com/200?text=No+Image';">
     </div>
 
     <h2 id="word-text">WORD</h2>
     <div class="phonetic" id="phonetic">/IPA/</div>
 
-    <button class="btn btn-sample" onclick="playSample()">🔊 Nghe mẫu</button>
+    <button class="btn btn-sample" onclick="playSampleSafe()">🔊 Nghe mẫu</button>
 
     <div class="stars" id="stars">☆☆☆☆☆</div>
-    <div class="feedback" id="feedback">Bạn hãy bấm nút xanh và đọc to nhé!</div>
+    <div class="feedback" id="feedback">Đang tải...</div>
 
-    <button id="mic-btn" class="btn btn-mic" onclick="startListening()">🎤 Đọc Ngay</button>
+    <button id="mic-btn" class="btn btn-mic" onclick="startListeningSafe()">🎤 Đọc Ngay</button>
 
-    <div style="margin-top: 25px; display: flex; justify-content: space-between; padding: 0 20px;">
+    <div style="margin-top: 20px; display: flex; justify-content: space-between; padding: 0 10px;">
         <button class="btn btn-nav" onclick="prevWord()">◀</button>
         <button class="btn btn-nav" onclick="nextWord()">▶</button>
     </div>
 </div>
 
 <script>
-    // Dữ liệu từ vựng
+    // --- 1. DỮ LIỆU ---
     const words = [
         { word: "ear", ipa: "/ɪr/", img: "ear.png" }, 
         { word: "beer", ipa: "/ɪr/", img: "beer.png" }, 
@@ -72,14 +71,24 @@
     ];
 
     let currentIndex = 0;
-    let recognitionTimeout;
     let recognition;
+    let recognitionTimeout;
+    
+    // Biến âm thanh (khởi tạo sau)
+    let audioWin, audioCorrect, audioWrong;
 
-    // SỬ DỤNG FILE ÂM THANH CỤC BỘ (Để khắc phục lỗi không có tiếng)
-    const soundEffects = {
-        win: new Audio("win.mp3"),     // Bạn cần tải file win.mp3 để vào cùng thư mục
-        correct: new Audio("correct.mp3"), // Bạn cần tải file correct.mp3
-        wrong: new Audio("wrong.mp3")    // Bạn cần tải file wrong.mp3
+    // --- 2. HÀM KHỞI TẠO AN TOÀN ---
+    window.onload = function() {
+        try {
+            document.getElementById('feedback').innerText = "Sẵn sàng! Bấm nút để học.";
+            loadWord(0);
+            // Thử khởi tạo âm thanh trước
+            audioWin = new Audio("win.mp3");
+            audioCorrect = new Audio("correct.mp3");
+            audioWrong = new Audio("wrong.mp3");
+        } catch (e) {
+            alert("Lỗi khởi động: " + e.message);
+        }
     };
 
     function loadWord(index) {
@@ -91,11 +100,9 @@
 
     function resetState() {
         document.getElementById('stars').innerText = "☆☆☆☆☆";
-        document.getElementById('feedback').innerText = "Sẵn sàng...";
         document.getElementById('mic-btn').disabled = false;
         document.getElementById('mic-btn').className = "btn btn-mic";
         document.getElementById('mic-btn').innerText = "🎤 Đọc Ngay";
-        if(recognition) { try { recognition.stop(); } catch(e){} }
         clearTimeout(recognitionTimeout);
     }
 
@@ -107,104 +114,100 @@
         if (currentIndex > 0) { currentIndex--; loadWord(currentIndex); }
     }
 
-    // CHỨC NĂNG NGHE MẪU (Đã tối ưu)
-    function playSample() {
-        // Hủy các lệnh đọc cũ để tránh bị kẹt
-        window.speechSynthesis.cancel();
-        
-        const text = words[currentIndex].word;
-        const utterance = new SpeechSynthesisUtterance(text);
-        
-        // Cố gắng lấy giọng chuẩn tiếng Anh Mỹ
-        let voices = window.speechSynthesis.getVoices();
-        let selectedVoice = voices.find(voice => voice.lang === 'en-US');
-        if(selectedVoice) utterance.voice = selectedVoice;
+    // --- 3. CHỨC NĂNG NGHE MẪU (AN TOÀN) ---
+    function playSampleSafe() {
+        try {
+            window.speechSynthesis.cancel(); // Dừng cái cũ
+            const text = words[currentIndex].word;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.8;
+            
+            // Fix lỗi trên iOS/Android đôi khi không đọc
+            utterance.onstart = function() { console.log("Bắt đầu đọc..."); }
+            utterance.onerror = function(e) { 
+                document.getElementById('feedback').innerText = "Lỗi đọc mẫu (Thử bật to loa media).";
+            }
 
-        utterance.lang = 'en-US'; 
-        utterance.rate = 0.8; 
-        
-        // Xử lý sự kiện nếu lỗi
-        utterance.onerror = function(e) {
-            console.error('TTS Error:', e);
-            alert("Lỗi âm thanh: Hãy kiểm tra xem điện thoại có đang tắt chuông không nhé!");
-        };
-
-        window.speechSynthesis.speak(utterance);
+            window.speechSynthesis.speak(utterance);
+        } catch (e) {
+            alert("Lỗi nút nghe: " + e.message);
+        }
     }
 
-    // Đảm bảo danh sách giọng đọc được tải (Fix lỗi trên Chrome)
-    window.speechSynthesis.onvoiceschanged = function() {
-        window.speechSynthesis.getVoices();
-    };
-
-    function startListening() {
-        if (!('webkitSpeechRecognition' in window)) {
-            alert("Thiết bị không hỗ trợ. Hãy dùng Google Chrome!");
+    // --- 4. CHỨC NĂNG MIC (AN TOÀN) ---
+    function startListeningSafe() {
+        // Kiểm tra trình duyệt
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            alert("Lỗi: Trình duyệt này không hỗ trợ Mic. Hãy dùng Google Chrome (Android) hoặc Safari (iPhone). Đừng dùng Zalo/Facebook Browser.");
             return;
         }
 
-        // Dừng đọc mẫu nếu đang đọc
-        window.speechSynthesis.cancel();
-
-        recognition = new webkitSpeechRecognition();
-        recognition.lang = 'en-US';
-        recognition.interimResults = false;
-        recognition.maxAlternatives = 1;
-        recognition.continuous = false;
-
-        document.getElementById('mic-btn').innerText = "👂 Đang nghe bạn...";
-        document.getElementById('mic-btn').className = "btn btn-mic listening";
-        document.getElementById('mic-btn').disabled = true;
-        document.getElementById('feedback').innerText = "Bạn đọc to lên nào...";
-
         try {
+            window.speechSynthesis.cancel(); // Tắt tiếng đọc mẫu nếu đang chạy
+
+            recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+            recognition.continuous = false;
+
+            document.getElementById('mic-btn').innerText = "👂 Đang nghe...";
+            document.getElementById('mic-btn').className = "btn btn-mic listening";
+            document.getElementById('mic-btn').disabled = true;
+            document.getElementById('feedback').innerText = "Đọc to lên bạn nhé...";
+
             recognition.start();
-        } catch(e) {
-            recognition.stop();
-            setTimeout(() => recognition.start(), 100);
+
+            // Timeout an toàn: Tự ngắt sau 5s nếu không nghe thấy gì
+            clearTimeout(recognitionTimeout);
+            recognitionTimeout = setTimeout(() => {
+                try { recognition.stop(); } catch(e){}
+                document.getElementById('feedback').innerText = "Hết giờ! Bạn đọc lại nhé.";
+                resetBtn();
+            }, 5000);
+
+            recognition.onresult = function(event) {
+                clearTimeout(recognitionTimeout);
+                const speechResult = event.results[0][0].transcript.toLowerCase();
+                checkResult(speechResult);
+            };
+
+            recognition.onerror = function(event) {
+                clearTimeout(recognitionTimeout);
+                console.log("Mic Error:", event.error);
+                if (event.error === 'not-allowed') {
+                    alert("Bạn chưa cấp quyền Micro. Hãy bấm 'Cho phép' khi trình duyệt hỏi.");
+                } else if (event.error === 'no-speech') {
+                    document.getElementById('feedback').innerText = "Không nghe thấy tiếng...";
+                } else {
+                    document.getElementById('feedback').innerText = "Lỗi mic: " + event.error;
+                }
+                resetBtn();
+            };
+
+            recognition.onend = function() {
+                if(document.getElementById('mic-btn').disabled && document.getElementById('stars').innerText === "☆☆☆☆☆") {
+                    resetBtn();
+                }
+            };
+
+        } catch (e) {
+            alert("Không thể khởi động Mic: " + e.message);
+            resetBtn();
         }
-
-        clearTimeout(recognitionTimeout);
-        recognitionTimeout = setTimeout(() => {
-            recognition.stop();
-            document.getElementById('feedback').innerText = "Hết giờ! Bạn đọc lại nhé.";
-            resetBtn();
-        }, 5000); 
-
-        recognition.onresult = function(event) {
-            clearTimeout(recognitionTimeout);
-            const speechResult = event.results[0][0].transcript.toLowerCase();
-            const targetWord = words[currentIndex].word;
-            
-            if (speechResult.includes(targetWord)) {
-                showResult(5, "Tuyệt vời! Chính xác 100%! 🎉");
-            } else if (isCloseEnough(speechResult, targetWord)) {
-                showResult(3, "Khá lắm! (" + speechResult + ")");
-            } else {
-                showResult(1, "Chưa đúng. (Máy nghe: " + speechResult + ")");
-            }
-        };
-
-        recognition.onerror = function(event) {
-            clearTimeout(recognitionTimeout);
-            if(event.error === 'no-speech') {
-                document.getElementById('feedback').innerText = "Không nghe thấy tiếng...";
-            } else {
-                document.getElementById('feedback').innerText = "Thử lại nhé.";
-            }
-            resetBtn();
-        };
-
-        recognition.onend = function() {
-           clearTimeout(recognitionTimeout);
-           if(document.getElementById('mic-btn').disabled && document.getElementById('stars').innerText === "☆☆☆☆☆") {
-               resetBtn();
-           }
-        };
     }
 
-    function isCloseEnough(heard, target) {
-        return heard.charAt(0) === target.charAt(0) && heard.length >= target.length - 1;
+    function checkResult(speechResult) {
+        const targetWord = words[currentIndex].word;
+        if (speechResult.includes(targetWord)) {
+            showResult(5, "Tuyệt vời! Chính xác! 🎉");
+        } else if (speechResult.charAt(0) === targetWord.charAt(0)) {
+            showResult(3, "Gần đúng (" + speechResult + ")");
+        } else {
+            showResult(1, "Chưa đúng (" + speechResult + ")");
+        }
     }
 
     function showResult(starCount, message) {
@@ -215,11 +218,7 @@
         document.getElementById('stars').innerText = stars;
         document.getElementById('feedback').innerText = message;
         
-        // Phát âm thanh từ file cục bộ
-        if (starCount === 5) playSound('win');
-        else if (starCount >= 3) playSound('correct');
-        else playSound('wrong');
-
+        playSoundSafe(starCount);
         resetBtn();
     }
 
@@ -229,27 +228,31 @@
         document.getElementById('mic-btn').innerText = "🎤 Đọc Lại";
     }
 
-    function playSound(type) {
-        // Reset âm thanh
-        soundEffects.win.pause(); soundEffects.win.currentTime = 0;
-        soundEffects.correct.pause(); soundEffects.correct.currentTime = 0;
-        soundEffects.wrong.pause(); soundEffects.wrong.currentTime = 0;
+    function playSoundSafe(starCount) {
+        try {
+            // Dừng mọi âm thanh cũ
+            if(audioWin) { audioWin.pause(); audioWin.currentTime = 0; }
+            if(audioCorrect) { audioCorrect.pause(); audioCorrect.currentTime = 0; }
+            if(audioWrong) { audioWrong.pause(); audioWrong.currentTime = 0; }
 
-        // Cố gắng phát và bắt lỗi nếu file không tồn tại
-        let promise;
-        if(type === 'win') promise = soundEffects.win.play();
-        if(type === 'correct') promise = soundEffects.correct.play();
-        if(type === 'wrong') promise = soundEffects.wrong.play();
+            let soundToPlay;
+            if (starCount === 5) soundToPlay = audioWin;
+            else if (starCount >= 3) soundToPlay = audioCorrect;
+            else soundToPlay = audioWrong;
 
-        if (promise !== undefined) {
-            promise.catch(error => {
-                console.log("Không tìm thấy file âm thanh hoặc trình duyệt chặn tự động phát: " + error);
-                // Không làm gì cả để tránh lỗi crash
-            });
+            // Thử phát
+            if(soundToPlay) {
+                let playPromise = soundToPlay.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.log("Audio play blocked: " + error);
+                    });
+                }
+            }
+        } catch (e) {
+            console.log("Lỗi phát âm thanh: " + e);
         }
     }
-
-    loadWord(0);
 </script>
 
 </body>
