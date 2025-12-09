@@ -14,32 +14,38 @@
         .content-box { width: 100%; margin: 0 auto; border-radius: 15px; background: #fff; position: relative; min-height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         
         /* Style cho Ảnh bài học */
-        #word-img { max-width: 100%; max-height: 280px; object-fit: contain; border: 2px dashed #ddd; border-radius: 15px; }
+        #word-img { max-width: 100%; max-height: 280px; object-fit: contain; border: 2px dashed #ddd; border-radius: 15px; margin-top: 10px;}
 
-        /* Style cho GAME NATIVE */
-        .game-area { width: 100%; display: none; flex-direction: column; gap: 15px; }
-        .game-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+        /* Style cho GAME NATIVE (Mới) */
+        .game-area { width: 100%; display: none; flex-direction: column; gap: 15px; padding: 10px; box-sizing: border-box; }
+        .game-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
         
+        /* Thẻ Game (Card) */
         .game-card { 
-            width: 80px; height: 80px; 
+            width: 75px; height: 75px; 
             border: 2px solid #ddd; border-radius: 10px; 
             background: #fff; cursor: pointer; 
             display: flex; align-items: center; justify-content: center; 
             transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .game-card img { max-width: 70px; max-height: 70px; pointer-events: none; }
+        .game-card img { max-width: 65px; max-height: 65px; pointer-events: none; }
         .game-card.selected { border-color: #2196F3; background-color: #E3F2FD; transform: scale(1.1); box-shadow: 0 0 10px #2196F3; }
         .game-card.matched { visibility: hidden; opacity: 0; transition: 0.5s; }
         
+        /* Thẻ Chữ (Chip) */
         .word-chip { 
-            padding: 10px 20px; background: #FF9800; color: white; 
-            border-radius: 25px; font-weight: bold; font-size: 18px; 
+            padding: 8px 15px; background: #FF9800; color: white; 
+            border-radius: 20px; font-weight: bold; font-size: 16px; 
             cursor: pointer; box-shadow: 0 3px #F57C00; border: none;
             transition: 0.2s;
         }
         .word-chip:active { transform: translateY(2px); box-shadow: 0 0 #F57C00; }
         .word-chip.selected { background: #2196F3; box-shadow: 0 3px #1976D2; transform: scale(1.1); }
         .word-chip.matched { visibility: hidden; opacity: 0; transition: 0.5s; }
+
+        /* Hiệu ứng Shake khi sai */
+        .shake { animation: shake 0.4s; background-color: #ffcdd2 !important; border-color: red !important; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
 
         h1 { color: #ff6f00; font-size: 22px; margin: 10px 0; }
         
@@ -71,10 +77,6 @@
         
         .listening { animation: pulse 1.5s infinite; background-color: #ff5722 !important; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-        
-        /* Hiệu ứng Shake khi sai */
-        .shake { animation: shake 0.5s; background-color: #ffcdd2 !important; border-color: red !important; }
-        @keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 10% { transform: translate(-1px, -2px) rotate(-1deg); } 20% { transform: translate(-3px, 0px) rotate(1deg); } 30% { transform: translate(3px, 2px) rotate(0deg); } 40% { transform: translate(1px, -1px) rotate(1deg); } 50% { transform: translate(-1px, 2px) rotate(-1deg); } 60% { transform: translate(-3px, 1px) rotate(0deg); } 70% { transform: translate(3px, 1px) rotate(-1deg); } 80% { transform: translate(-1px, -1px) rotate(1deg); } 90% { transform: translate(1px, 2px) rotate(0deg); } 100% { transform: translate(1px, -2px) rotate(-1deg); } }
     </style>
 </head>
 <body>
@@ -83,14 +85,17 @@
     <h1 id="header-title">🐻 Học phát âm 🐰</h1>
     
     <div class="content-box" id="content-box">
-        <img id="word-img" src="" alt="Hình ảnh minh họa">
+        <img id="word-img" src="" alt="Hình ảnh minh họa" onerror="this.onerror=null; this.src='https://via.placeholder.com/300x200?text=Đang+tải...';">
         
         <div id="game-area" class="game-area">
-            <div style="margin-bottom: 10px; color: #555;">Bấm vào <b>Hình</b> rồi chọn <b>Từ</b> đúng nhé!</div>
+            <div style="color: #555; font-size: 14px;">Bấm vào <b>Hình</b> rồi chọn <b>Từ</b> đúng nhé!</div>
             <div id="game-images" class="game-row"></div>
-            <hr style="width: 50%; border-top: 1px dashed #ccc; margin: 15px auto;">
+            <hr style="width: 50%; border-top: 1px dashed #ccc; margin: 10px auto;">
             <div id="game-words" class="game-row"></div>
-            <div id="game-win-msg" style="display:none; color: green; font-size: 24px; font-weight: bold; margin-top: 20px;">🎉 CHIẾN THẮNG! 🎉</div>
+            
+            <div id="game-win-msg" style="display:none; color: green; font-size: 20px; font-weight: bold; margin-top: 15px; animation: pulse 1s infinite;">
+                🎉 GIỎI QUÁ! CHIẾN THẮNG! 🎉
+            </div>
         </div>
     </div>
 
@@ -99,10 +104,14 @@
             <h2 id="word-text">...</h2>
             <div class="phonetic" id="phonetic">...</div>
         </div>
+
         <div id="sentence-area" class="sentence-container"></div>
+
         <button class="btn btn-sample" onclick="playSampleSafe()">🔊 Nghe mẫu</button>
+
         <div class="stars" id="stars">☆☆☆☆☆</div>
         <div class="feedback" id="feedback">Đang tải dữ liệu...</div>
+
         <button id="mic-btn" class="btn btn-mic" onclick="startListeningSafe()">🎤 Đọc Ngay</button>
     </div>
 
@@ -117,7 +126,7 @@
 </div>
 
 <script>
-    // --- DANH SÁCH BÀI HỌC & GAME DATA ---
+    // --- DỮ LIỆU BÀI HỌC ---
     const items = [
         // NHÓM 1: ÂM /ɪr/
         { word: "beer", ipa: "/ɪr/", img: "beer.png", type: "word", speakText: "beer", similar: ["bear", "beard", "pier", "beers"] }, 
@@ -133,32 +142,38 @@
         { word: "stair", ipa: "/ɛr/", img: "stair.png", type: "word", speakText: "stair", similar: ["stare", "star", "stairs", "stay"] }, 
         { word: "chair", ipa: "/ɛr/", img: "chair.png", type: "word", speakText: "chair", similar: ["cheer", "share", "chairs", "care"] },
 
-        // NHÓM 3: CÂU
+        // NHÓM 3: CÂU (IPA trên đầu)
         { 
             type: "sentence",
             word: "The deer is near the chair", 
             img: "sentence_deer.png",
-            htmlParts: [ {text: "The", ipa: "ðə"}, {text: "deer", ipa: "ɪr"}, {text: "is", ipa: "ɪz"}, {text: "near", ipa: "ɪr"}, {text: "the", ipa: "ðə"}, {text: "chair.", ipa: "tʃ ɛr"} ],
+            htmlParts: [ 
+                {text: "The", ipa: "ðə"}, {text: "deer", ipa: "ɪr"}, {text: "is", ipa: "ɪz"}, 
+                {text: "near", ipa: "ɪr"}, {text: "the", ipa: "ðə"}, {text: "chair.", ipa: "tʃ ɛr"} 
+            ],
             similar: ["the deer is near the chair", "deer near chair"]
         },
         { 
             type: "sentence",
             word: "The bear shares the pear",
             img: "sentence_bear.png",
-            htmlParts: [ {text: "The", ipa: "ðə"}, {text: "bear", ipa: "ɛr"}, {text: "shares", ipa: "ʃ ɛr"}, {text: "the", ipa: "ðə"}, {text: "pear.", ipa: "ɛr"} ],
+            htmlParts: [ 
+                {text: "The", ipa: "ðə"}, {text: "bear", ipa: "ɛr"}, {text: "shares", ipa: "ʃ ɛr"}, 
+                {text: "the", ipa: "ðə"}, {text: "pear.", ipa: "ɛr"} 
+            ],
             similar: ["the bear shares the pear", "bear shares pear"]
         },
 
-        // NHÓM 4: GAME TỰ TẠO (NATIVE)
+        // NHÓM 4: TRÒ CHƠI TỰ TẠO (Thay thế Wordwall)
         { 
             type: "game", 
-            title: "Trò chơi ghép hình /ɪr/", 
-            gameData: ["beer", "deer", "cheer", "tear", "ear"] // Danh sách từ cần ghép
+            title: "Trò chơi với âm /ɪr/", 
+            gameData: ["beer", "deer", "cheer", "tear", "ear"] // Danh sách từ để ghép
         },
         { 
             type: "game", 
-            title: "Trò chơi ghép hình /ɛr/", 
-            gameData: ["bear", "pear", "share", "stair", "chair"] // Danh sách từ cần ghép
+            title: "Trò chơi với âm /ɛr/", 
+            gameData: ["bear", "pear", "share", "stair", "chair"] 
         }
     ];
 
@@ -172,14 +187,20 @@
     let selectedWord = null;
     let matchedCount = 0;
 
+    // --- KHỞI TẠO ---
     window.onload = function() {
         try {
             document.getElementById('feedback').innerText = "Sẵn sàng! Bấm nút để học.";
+            // Tải bài đầu tiên nhưng không tự đọc để tránh lỗi treo ban đầu
             loadItem(0, false);
+            
+            // Nạp âm thanh
             audioWin = new Audio("win.mp3");
             audioCorrect = new Audio("correct.mp3");
             audioWrong = new Audio("wrong.mp3");
-        } catch (e) { alert("Lỗi: " + e); }
+        } catch (e) {
+            alert("Lỗi khởi động: " + e);
+        }
     };
 
     function loadItem(index, autoPlay = true) {
@@ -189,22 +210,26 @@
         const gameControls = document.getElementById('game-controls');
         const imgEl = document.getElementById('word-img');
 
+        // Reset trạng thái
         window.speechSynthesis.cancel();
         resetState();
 
         if (item.type === 'game') {
             // --- CHẾ ĐỘ GAME ---
             document.getElementById('header-title').innerText = "🎮 " + item.title;
+            
+            // Ẩn phần học, hiện phần game
             learningSection.style.display = 'none';
             imgEl.style.display = 'none';
-            gameArea.style.display = 'flex'; // Hiện game native
+            gameArea.style.display = 'flex';
             gameControls.style.display = 'block';
             
-            setupGame(); // Khởi tạo game
+            setupGame(); // Tạo bàn chơi mới
 
         } else {
             // --- CHẾ ĐỘ HỌC ---
             document.getElementById('header-title').innerText = "🐻 Học phát âm 🐰";
+            
             learningSection.style.display = 'block';
             imgEl.style.display = 'block';
             gameArea.style.display = 'none';
@@ -229,19 +254,21 @@
                 document.getElementById('phonetic').innerText = item.ipa;
             }
 
-            if(autoPlay) setTimeout(() => { playSampleSafe(); }, 500);
+            // Tự động đọc (nếu không phải là lần load đầu tiên)
+            if(autoPlay) {
+                setTimeout(() => { playSampleSafe(); }, 500);
+            }
         }
     }
 
-    // --- LOGIC GAME NATIVE ---
+    // --- LOGIC GAME GHÉP HÌNH ---
     function setupGame() {
         const currentItem = items[currentIndex];
-        const targetWords = currentItem.gameData; // ["ear", "beer"...]
+        const targetWords = currentItem.gameData;
         const imgContainer = document.getElementById('game-images');
         const wordContainer = document.getElementById('game-words');
         const winMsg = document.getElementById('game-win-msg');
         
-        // Reset
         imgContainer.innerHTML = "";
         wordContainer.innerHTML = "";
         winMsg.style.display = "none";
@@ -249,15 +276,13 @@
         selectedWord = null;
         matchedCount = 0;
 
-        // Tạo danh sách trộn ngẫu nhiên
+        // Trộn ngẫu nhiên
         let shuffledImages = [...targetWords].sort(() => Math.random() - 0.5);
         let shuffledWords = [...targetWords].sort(() => Math.random() - 0.5);
 
-        // Render Hình ảnh
+        // Tạo thẻ Hình
         shuffledImages.forEach(wordKey => {
-            // Tìm object gốc để lấy link ảnh
-            let originalObj = items.find(i => i.word === wordKey);
-            
+            let originalObj = items.find(i => i.word === wordKey); // Lấy link ảnh từ dữ liệu gốc
             let card = document.createElement('div');
             card.className = 'game-card';
             card.dataset.key = wordKey;
@@ -266,7 +291,7 @@
             imgContainer.appendChild(card);
         });
 
-        // Render Từ vựng
+        // Tạo thẻ Chữ
         shuffledWords.forEach(wordKey => {
             let chip = document.createElement('button');
             chip.className = 'word-chip';
@@ -278,7 +303,6 @@
     }
 
     function selectCard(el, type) {
-        // Nếu đã đúng rồi thì không bấm được nữa
         if(el.classList.contains('matched')) return;
 
         // Xử lý chọn
@@ -292,7 +316,7 @@
             selectedWord.classList.add('selected');
         }
 
-        // Kiểm tra ghép đôi
+        // Nếu đã chọn cả 2 -> Kiểm tra
         if (selectedImg && selectedWord) {
             checkMatch();
         }
@@ -318,7 +342,6 @@
             u.lang = 'en-US';
             window.speechSynthesis.speak(u);
 
-            // Kiểm tra thắng
             if (matchedCount === 5) {
                 setTimeout(() => {
                     document.getElementById('game-win-msg').style.display = 'block';
@@ -329,7 +352,6 @@
         } else {
             // SAI
             playSoundSafeLocal('wrong');
-            // Hiệu ứng rung lắc
             selectedImg.classList.add('shake');
             selectedWord.classList.add('shake');
             setTimeout(() => {
@@ -341,11 +363,29 @@
         }
     }
 
-    // --- CÁC HÀM HỖ TRỢ KHÁC ---
-    function nextItem() { if (currentIndex < items.length - 1) { currentIndex++; loadItem(currentIndex, true); } }
-    function prevItem() { if (currentIndex > 0) { currentIndex--; loadItem(currentIndex, true); } }
-    function resetState() { document.getElementById('stars').innerText = "☆☆☆☆☆"; document.getElementById('mic-btn').disabled = false; document.getElementById('mic-btn').innerText = "🎤 Đọc Ngay"; clearTimeout(recognitionTimeout); }
-    
+    // --- CÁC HÀM ĐIỀU HƯỚNG & HỌC TẬP ---
+    function nextItem() { 
+        if (currentIndex < items.length - 1) { 
+            currentIndex++; 
+            loadItem(currentIndex, true); 
+        } 
+    }
+
+    function prevItem() { 
+        if (currentIndex > 0) { 
+            currentIndex--; 
+            loadItem(currentIndex, true); 
+        } 
+    }
+
+    function resetState() {
+        document.getElementById('stars').innerText = "☆☆☆☆☆";
+        document.getElementById('mic-btn').disabled = false;
+        document.getElementById('mic-btn').className = "btn btn-mic";
+        document.getElementById('mic-btn').innerText = "🎤 Đọc Ngay";
+        clearTimeout(recognitionTimeout);
+    }
+
     function playSampleSafe() {
         if(items[currentIndex].type === 'game') return;
         try {
@@ -361,8 +401,10 @@
 
     function startListeningSafe() {
         if(items[currentIndex].type === 'game') return;
+        
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) { alert("Dùng Chrome/Safari nhé."); return; }
+
         try {
             window.speechSynthesis.cancel();
             recognition = new SpeechRecognition();
@@ -370,9 +412,77 @@
             recognition.interimResults = false;
             recognition.maxAlternatives = 10;
             recognition.continuous = false;
+
             document.getElementById('mic-btn').innerText = "👂 Đang nghe...";
             document.getElementById('mic-btn').disabled = true;
+
             recognition.start();
+
             const waitTime = items[currentIndex].type === 'sentence' ? 10000 : 8000;
             clearTimeout(recognitionTimeout);
-            recognitionTimeout =
+            recognitionTimeout = setTimeout(() => {
+                try { recognition.stop(); } catch(e){}
+                document.getElementById('feedback').innerText = "Hết giờ! Bạn thử lại nhé.";
+                resetBtn();
+            }, waitTime); 
+
+            recognition.onresult = function(event) {
+                clearTimeout(recognitionTimeout);
+                let heardWords = [];
+                for(let i = 0; i < event.results[0].length; i++) {
+                    heardWords.push(event.results[0][i].transcript.toLowerCase());
+                }
+                checkResultSmart(heardWords);
+            };
+            
+            recognition.onerror = function() { clearTimeout(recognitionTimeout); document.getElementById('feedback').innerText = "Thử lại nào!"; resetBtn(); };
+            recognition.onend = function() { if(document.getElementById('mic-btn').disabled) resetBtn(); };
+        } catch (e) { resetBtn(); }
+    }
+
+    function checkResultSmart(heardWords) {
+        const currentData = items[currentIndex];
+        const targetText = currentData.word.toLowerCase();
+        const cleanTarget = targetText.replace(/[.,]/g, "");
+        const validList = currentData.similar || [];
+        
+        let isPerfect = heardWords.some(w => w.replace(/[.,]/g, "").includes(cleanTarget) || validList.includes(w.replace(/[.,]/g, "")));
+        if (isPerfect) { showResult(5, "Tuyệt vời!"); return; }
+
+        let bestGuess = heardWords[0];
+        if (currentData.type === 'sentence') {
+            const targetWordsArr = cleanTarget.split(" ");
+            let matchCount = 0;
+            targetWordsArr.forEach(tw => { if (bestGuess.includes(tw)) matchCount++; });
+            if (matchCount >= targetWordsArr.length / 2) showResult(3, "Khá lắm!");
+            else showResult(2, "Cố lên!");
+        } else {
+            if (bestGuess.charAt(0) === targetText.charAt(0)) showResult(4, "Gần đúng!");
+            else showResult(2, "Cố lên!");
+        }
+    }
+
+    function showResult(starCount, message) {
+        let stars = ""; for (let i = 0; i < 5; i++) { stars += (i < starCount) ? "⭐" : "☆"; }
+        document.getElementById('stars').innerText = stars;
+        document.getElementById('feedback').innerText = message;
+        playSoundSafeLocal(starCount === 5 ? 'win' : (starCount >= 3 ? 'correct' : 'wrong'));
+        resetBtn();
+    }
+    
+    function resetBtn() { document.getElementById('mic-btn').disabled = false; document.getElementById('mic-btn').innerText = "🎤 Đọc Ngay"; }
+
+    function playSoundSafeLocal(type) {
+        try {
+            if(audioWin) { audioWin.pause(); audioWin.currentTime = 0; }
+            if(audioCorrect) { audioCorrect.pause(); audioCorrect.currentTime = 0; }
+            if(audioWrong) { audioWrong.pause(); audioWrong.currentTime = 0; }
+            let s;
+            if(type==='win') s = audioWin; else if(type==='correct') s = audioCorrect; else s = audioWrong;
+            if(s) s.play().catch(e=>{});
+        } catch(e){}
+    }
+</script>
+
+</body>
+</html>
