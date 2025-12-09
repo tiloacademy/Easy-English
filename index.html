@@ -5,96 +5,170 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Học tiếng Anh thật dễ</title>
     <style>
-        body { font-family: 'Arial', sans-serif; background-color: #e0f7fa; text-align: center; padding: 10px; margin: 0; user-select: none; }
+        /* --- CÀI ĐẶT CHUNG & MÀU SẮC --- */
+        :root {
+            --primary-color: #00A4EF; /* Xanh kiểu Wordwall */
+            --secondary-color: #FFB900;
+            --success-color: #7FBA00; /* Xanh lá đúng */
+            --error-color: #F25022; /* Đỏ sai */
+            --card-shadow: 0 4px 0px rgba(0,0,0,0.1), 0 8px 15px rgba(0,0,0,0.1); /* Tạo độ dày 3D */
+            --card-shadow-hover: 0 8px 0px rgba(0,0,0,0.1), 0 15px 20px rgba(0,0,0,0.15);
+        }
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            background-color: #f0f2f5; /* Nền sáng hiện đại */
+            text-align: center; padding: 10px; margin: 0; user-select: none; 
+        }
         
         /* Container chính */
-        .card { background: white; border-radius: 20px; padding: 15px; max-width: 600px; margin: 10px auto; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 5px solid #FFD700; min-height: 600px; position: relative; box-sizing: border-box; }
-        
-        /* KHUNG BÁO LỖI (Chỉ hiện khi có lỗi) */
-        #error-log { display: none; background: #ffebee; color: #c62828; padding: 10px; border: 1px solid red; margin-bottom: 10px; text-align: left; font-size: 12px; white-space: pre-wrap; }
+        .card { 
+            background: white; border-radius: 25px; padding: 20px; 
+            max-width: 600px; margin: 10px auto; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+            border: none; /* Bỏ viền vàng cũ */
+            min-height: 600px; position: relative; box-sizing: border-box; 
+        }
 
-        /* KHU VỰC HIỂN THỊ CHUNG */
-        .content-box { width: 100%; margin: 0 auto; border-radius: 15px; background: #fff; position: relative; min-height: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        /* KHU VỰC HIỂN THỊ CHUNG (Bàn chơi) */
+        .content-box { 
+            width: 100%; margin: 0 auto; border-radius: 20px; 
+            background: #eef2f7; /* Màu nền bàn chơi nhẹ nhàng */
+            border: 3px solid #dce4ec;
+            position: relative; min-height: 320px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            padding: 10px; box-sizing: border-box;
+        }
         
         /* Style cho Ảnh bài học */
-        #word-img { max-width: 100%; max-height: 250px; object-fit: contain; border: 2px dashed #ddd; border-radius: 15px; margin-top: 10px;}
+        #word-img { 
+            max-width: 95%; max-height: 280px; object-fit: contain; 
+            border-radius: 15px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            background: white; padding: 5px;
+        }
 
-        /* --- STYLE CHO GAME MEMORY (LẬT HÌNH) --- */
-        .game-area { width: 100%; display: none; flex-direction: column; align-items: center; gap: 15px; padding: 10px; box-sizing: border-box; }
+        /* --- STYLE MỚI CHO GAME MEMORY (LẬT HÌNH) --- */
+        .game-area { width: 100%; display: none; flex-direction: column; align-items: center; gap: 15px; padding: 5px; box-sizing: border-box; }
         
         .memory-grid { 
             display: grid; 
-            grid-template-columns: repeat(4, 1fr); /* 4 cột - Trên điện thoại sẽ tự nhỏ lại */
-            gap: 8px; 
-            width: 100%;
-            max-width: 400px;
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 12px; /* Khoảng cách rộng hơn xíu */
+            width: 100%; max-width: 420px;
+            perspective: 1000px;
         }
 
         .memory-card {
             background-color: transparent;
-            width: 100%;
-            aspect-ratio: 1/1; 
-            perspective: 1000px; 
+            width: 100%; aspect-ratio: 1/1; 
             cursor: pointer;
+            position: relative;
+            /* Hiệu ứng khi di chuột vào: Nổi lên */
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1;
         }
+        .memory-card:hover { transform: translateY(-4px); z-index: 2; } /* Nhấc nhẹ lên */
 
         .memory-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
+            position: relative; width: 100%; height: 100%;
             text-align: center;
-            transition: transform 0.6s;
+            transition: transform 0.5s cubic-bezier(0.4, 0.0, 0.2, 1); /* Lật mượt hơn */
             transform-style: preserve-3d;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            border-radius: 8px;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow); /* Tạo độ dày */
         }
+        .memory-card:hover .memory-inner { box-shadow: var(--card-shadow-hover); }
 
         .memory-card.flipped .memory-inner { transform: rotateY(180deg); }
-        .memory-card.matched .memory-inner { transform: rotateY(180deg); opacity: 0; pointer-events: none; } /* Đã đúng thì biến mất */
-
-        .memory-front, .memory-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid #FF9800;
-            box-sizing: border-box;
-            padding: 2px;
+        
+        /* Hiệu ứng khi ĐÚNG */
+        .memory-card.matched .memory-inner { 
+            transform: rotateY(180deg) scale(0.9); /* Thu nhỏ lại xíu */
+            opacity: 0.6; 
+            box-shadow: none; /* Mất bóng */
+            transition: all 0.5s;
+        }
+        .memory-card.matched .memory-back {
+            background: var(--success-color); /* Chuyển nền xanh lá */
+            color: white; border-color: transparent;
         }
 
-        /* Mặt sau (Úp) */
-        .memory-front { background-color: #FF9800; color: white; font-size: 24px; font-weight: bold; }
-        /* Mặt trước (Ngửa) */
-        .memory-back { background-color: white; color: black; transform: rotateY(180deg); }
-        .memory-back img { max-width: 90%; max-height: 90%; object-fit: contain; }
-        .memory-back span { font-weight: bold; font-size: 13px; word-break: break-word; }
+        /* Hiệu ứng khi SAI (Rung lắc mạnh) */
+        .memory-card.shake { animation: intenseShake 0.5s; }
+        .memory-card.shake .memory-back { background-color: var(--error-color) !important; color: white; }
+        @keyframes intenseShake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-8px) rotate(-2deg); }
+            40% { transform: translateX(8px) rotate(2deg); }
+            60% { transform: translateX(-8px) rotate(-1deg); }
+            80% { transform: translateX(8px) rotate(1deg); }
+        }
 
-        h1 { color: #ff6f00; font-size: 22px; margin: 10px 0; }
-        h2 { color: #333; font-size: 38px; margin: 5px 0; letter-spacing: 2px; }
-        .phonetic { color: #888; font-size: 20px; margin-bottom: 10px; font-family: 'Times New Roman', serif; }
+        .memory-front, .memory-back {
+            position: absolute; width: 100%; height: 100%;
+            -webkit-backface-visibility: hidden; backface-visibility: hidden;
+            border-radius: 15px;
+            display: flex; align-items: center; justify-content: center;
+            box-sizing: border-box;
+            border: 3px solid white; /* Viền trắng sạch sẽ */
+            overflow: hidden;
+        }
+
+        /* Mặt sau (Úp - Màu xanh Wordwall) */
+        .memory-front { 
+            background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); /* Gradient xanh hiện đại */
+            color: white; font-size: 32px; font-weight: 900; 
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+        
+        /* Mặt trước (Ngửa - Trắng sạch) */
+        .memory-back { 
+            background-color: white; color: #333; 
+            transform: rotateY(180deg); 
+            padding: 5px;
+        }
+        .memory-back img { max-width: 90%; max-height: 90%; object-fit: contain; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.1)); }
+        .memory-back span { font-weight: 800; font-size: 16px; color: #444; }
+
+        /* --- CÁC PHẦN KHÁC --- */
+        h1 { color: var(--primary-color); font-size: 24px; margin: 15px 0; font-weight: 800; }
+        h2 { color: #333; font-size: 42px; margin: 5px 0; font-weight: 900; }
+        .phonetic { color: #666; font-size: 22px; margin-bottom: 15px; font-family: 'Times New Roman', serif; font-style: italic; }
 
         .sentence-container { display: none; justify-content: center; flex-wrap: wrap; gap: 8px; margin: 15px 0; }
         .word-block { display: flex; flex-direction: column; align-items: center; }
-        .ipa-top { color: #ff3b30; font-size: 16px; font-weight: bold; margin-bottom: 2px; font-family: sans-serif; }
-        .text-bottom { color: #000; font-size: 26px; font-weight: normal; }
+        .ipa-top { color: var(--error-color); font-size: 16px; font-weight: bold; margin-bottom: 2px; font-family: sans-serif; }
+        .text-bottom { color: #333; font-size: 26px; font-weight: 600; }
         
-        .btn { border: none; border-radius: 50px; cursor: pointer; margin: 10px 5px; box-shadow: 0 4px #999; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; color: white; }
-        .btn:disabled { background-color: #ccc !important; }
-        .btn-mic { background-color: #4CAF50; padding: 12px 30px; font-size: 18px; width: 80%; }
-        .btn-sample { background-color: #2196F3; padding: 10px 20px; font-size: 16px; }
-        
-        .nav-container { margin-top: auto; display: flex; justify-content: space-between; padding: 10px 5px 0; width: 100%; box-sizing: border-box;}
-        .btn-nav { background-color: #FF9800; padding: 0; font-size: 24px; width: 50px; height: 50px; border-radius: 50%; line-height: 50px; }
+        .btn { 
+            border: none; border-radius: 50px; cursor: pointer; margin: 10px 5px; 
+            box-shadow: 0 5px 0px rgba(0,0,0,0.1); /* Nút bấm nổi */
+            transition: all 0.1s; display: inline-flex; align-items: center; justify-content: center; 
+            font-weight: bold; color: white; 
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn:active { transform: translateY(3px); box-shadow: 0 2px 0px rgba(0,0,0,0.1); }
+        .btn:disabled { background-color: #ccc !important; color: #888; box-shadow: none; transform: none; cursor: not-allowed;}
 
-        .stars { font-size: 40px; color: #FFD700; height: 50px; margin: 5px 0; }
-        .feedback { font-size: 16px; color: #555; min-height: 40px; margin-bottom: 5px; font-style: italic; padding: 5px; border: 1px dotted #ccc; border-radius: 5px;}
-        .listening { animation: pulse 1.5s infinite; background-color: #ff5722 !important; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        .btn-mic { background-color: var(--success-color); padding: 15px 35px; font-size: 20px; width: 85%; }
+        .btn-sample { background-color: var(--primary-color); padding: 10px 25px; font-size: 16px; }
+        .btn-reset { background-color: #9C27B0; padding: 10px 30px; font-size: 18px; }
+
+        .nav-container { margin-top: auto; display: flex; justify-content: space-between; padding: 10px 5px 0; width: 100%; box-sizing: border-box;}
+        .btn-nav { background-color: var(--secondary-color); padding: 0; font-size: 28px; width: 55px; height: 55px; border-radius: 50%; line-height: 55px; }
+
+        .stars { font-size: 45px; color: var(--secondary-color); height: 55px; margin: 5px 0; text-shadow: 2px 2px 0 rgba(0,0,0,0.1); }
+        .feedback { font-size: 18px; color: #555; min-height: 30px; margin-bottom: 15px; font-weight: 600; }
+        
+        .listening { animation: pulse 1.5s infinite; background-color: var(--error-color) !important; }
+        @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(242, 80, 34, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(242, 80, 34, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(242, 80, 34, 0); } }
+        
+        #game-win-msg {
+            display:none; color: var(--success-color); font-size: 22px; font-weight: 900; 
+            margin-top: 15px; padding: 10px; background: #e6f9e6; border-radius: 10px;
+            animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        @keyframes popIn { 0% { transform: scale(0); } 80% { transform: scale(1.1); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -102,17 +176,13 @@
 <div class="card">
     <h1 id="header-title">🐻 Học phát âm 🐰</h1>
     
-    <div id="error-log"></div>
-
     <div class="content-box" id="content-box">
         <img id="word-img" src="" alt="Hình ảnh minh họa" onerror="handleImgError(this)">
         
         <div id="game-area" class="game-area">
-            <div style="color: #555; font-size: 14px;">Lật 2 thẻ giống nhau (Hình - Chữ):</div>
+            <div style="color: #555; font-size: 16px; font-weight: 600;">Tìm 5 cặp Hình - Chữ giống nhau:</div>
             <div id="memory-grid" class="memory-grid"></div>
-            <div id="game-win-msg" style="display:none; color: green; font-size: 20px; font-weight: bold; margin-top: 15px; animation: pulse 1s infinite;">
-                🎉 CHIẾN THẮNG! 🎉
-            </div>
+            <div id="game-win-msg">🎉 XUẤT SẮC! CHIẾN THẮNG! 🎉</div>
         </div>
     </div>
 
@@ -128,8 +198,8 @@
         <button id="mic-btn" class="btn btn-mic" onclick="startListeningSafe()">🎤 Đọc Ngay</button>
     </div>
 
-    <div id="game-controls" style="display:none; margin-top:10px;">
-        <button class="btn" style="background-color: #9C27B0;" onclick="setupMemoryGame()">🔄 Chơi Lại</button>
+    <div id="game-controls" style="display:none; margin-top:15px;">
+        <button class="btn btn-reset" onclick="setupMemoryGame()">🔄 Chơi Lại Ván Mới</button>
     </div>
 
     <div class="nav-container">
@@ -139,21 +209,7 @@
 </div>
 
 <script>
-    // --- HỆ THỐNG XỬ LÝ LỖI (QUAN TRỌNG) ---
-    function logError(msg) {
-        const errEl = document.getElementById('error-log');
-        errEl.style.display = 'block';
-        errEl.innerHTML += "⚠️ " + msg + "<br>";
-        console.error(msg);
-    }
-
-    // ĐÂY LÀ HÀM BỊ THIẾU Ở CODE CŨ GÂY RA LỖI
-    function handleImgError(img) {
-        if(img.src && !img.src.includes('placeholder')) {
-            // Không báo lỗi ầm ĩ, chỉ thay ảnh
-            img.src = 'https://via.placeholder.com/300x200?text=Ảnh+Lỗi';
-        }
-    }
+    function handleImgError(img) { if(img.src && !img.src.includes('placeholder')) { img.src = 'https://via.placeholder.com/300x200?text=Ảnh+Lỗi'; } }
 
     // --- DỮ LIỆU ---
     const items = [
@@ -203,15 +259,10 @@
         try {
             document.getElementById('feedback').innerText = "Sẵn sàng!";
             loadItem(0, false);
-            
-            // Thử nạp âm thanh (trong khối try catch để không chết app nếu lỗi file)
             try { audioWin = new Audio("win.mp3"); } catch(e){}
             try { audioCorrect = new Audio("correct.mp3"); } catch(e){}
             try { audioWrong = new Audio("wrong.mp3"); } catch(e){}
-            
-        } catch (e) {
-            logError("Lỗi khởi động: " + e.message);
-        }
+        } catch (e) { console.error(e); }
     };
 
     function loadItem(index, autoPlay = true) {
@@ -221,6 +272,7 @@
             const gameArea = document.getElementById('game-area');
             const gameControls = document.getElementById('game-controls');
             const imgEl = document.getElementById('word-img');
+            const contentBox = document.getElementById('content-box');
 
             window.speechSynthesis.cancel();
             resetState();
@@ -231,6 +283,7 @@
                 imgEl.style.display = 'none';
                 gameArea.style.display = 'flex';
                 gameControls.style.display = 'block';
+                contentBox.style.backgroundColor = "#eef2f7"; /* Màu nền bàn chơi */
                 setupMemoryGame();
             } else {
                 document.getElementById('header-title').innerText = "🐻 Học phát âm 🐰";
@@ -238,6 +291,7 @@
                 imgEl.style.display = 'block';
                 gameArea.style.display = 'none';
                 gameControls.style.display = 'none';
+                contentBox.style.backgroundColor = "#fff"; /* Nền trắng cho bài học */
                 
                 if(item.img) imgEl.src = item.img;
 
@@ -260,12 +314,10 @@
                 }
                 if(autoPlay) setTimeout(() => { playSampleSafe(); }, 500);
             }
-        } catch(e) {
-            logError("Lỗi tải bài học: " + e.message);
-        }
+        } catch(e) { console.error(e); }
     }
 
-    // --- LOGIC GAME MEMORY ---
+    // --- LOGIC GAME MEMORY (Cập nhật hiệu ứng) ---
     function setupMemoryGame() {
         const currentItem = items[currentIndex];
         const targetWords = currentItem.gameData;
@@ -287,8 +339,6 @@
             if(originalObj) {
                 cards.push({ key: wordKey, type: 'img', content: `<img src="${originalObj.img}">` });
                 cards.push({ key: wordKey, type: 'text', content: `<span>${wordKey.toUpperCase()}</span>` });
-            } else {
-                logError("Không tìm thấy dữ liệu cho game: " + wordKey);
             }
         });
 
@@ -298,13 +348,16 @@
             const cardEl = document.createElement('div');
             cardEl.classList.add('memory-card');
             cardEl.dataset.key = cardData.key;
+            // Thêm sự kiện chạm cho mobile để loại bỏ delay
+            cardEl.addEventListener('touchstart', function(e) { e.preventDefault(); flipCard.call(this); }, {passive: false});
+            cardEl.addEventListener('click', flipCard);
+            
             cardEl.innerHTML = `
                 <div class="memory-inner">
                     <div class="memory-front">?</div>
                     <div class="memory-back">${cardData.content}</div>
                 </div>
             `;
-            cardEl.addEventListener('click', flipCard);
             grid.appendChild(cardEl);
         });
     }
@@ -341,32 +394,33 @@
     }
 
     function disableCards() {
-        firstCard.removeEventListener('click', flipCard);
-        secondCard.removeEventListener('click', flipCard);
-        
-        // Đánh dấu đã khớp (ẩn đi)
+        lockBoard = true; // Khóa bảng tạm thời để tránh bấm lung tung khi đang hiệu ứng
         setTimeout(() => {
             firstCard.classList.add('matched');
             secondCard.classList.add('matched');
             resetBoard();
-        }, 500);
+        }, 600); // Đợi lật xong mới báo đúng
 
         matchedPairs++;
         if (matchedPairs === 5) {
             setTimeout(() => {
                 document.getElementById('game-win-msg').style.display = 'block';
                 playSoundSafeLocal('win');
-            }, 800);
+            }, 1000);
         }
     }
 
     function unflipCards() {
         lockBoard = true;
+        // Thêm hiệu ứng rung lắc
+        firstCard.classList.add('shake');
+        secondCard.classList.add('shake');
+
         setTimeout(() => {
-            firstCard.classList.remove('flipped');
-            secondCard.classList.remove('flipped');
+            firstCard.classList.remove('flipped', 'shake');
+            secondCard.classList.remove('flipped', 'shake');
             resetBoard();
-        }, 1200);
+        }, 1000);
     }
 
     function resetBoard() {
@@ -382,6 +436,7 @@
         document.getElementById('stars').innerText = "☆☆☆☆☆";
         document.getElementById('mic-btn').disabled = false;
         document.getElementById('mic-btn').innerText = "🎤 Đọc Ngay";
+        document.getElementById('feedback').className = "feedback";
         clearTimeout(recognitionTimeout);
     }
     
@@ -406,6 +461,7 @@
             recognition = new SpeechRecognition();
             recognition.lang = 'en-US'; recognition.interimResults = false; recognition.maxAlternatives = 10; recognition.continuous = false;
             document.getElementById('mic-btn').innerText = "👂 Đang nghe..."; document.getElementById('mic-btn').disabled = true;
+            document.getElementById('feedback').innerText = "Đang nghe..."; document.getElementById('feedback').className = "feedback listening";
             recognition.start();
             const waitTime = items[currentIndex].type === 'sentence' ? 10000 : 8000;
             clearTimeout(recognitionTimeout);
@@ -418,7 +474,7 @@
             };
             recognition.onerror = function() { clearTimeout(recognitionTimeout); document.getElementById('feedback').innerText = "Thử lại nào!"; resetBtn(); };
             recognition.onend = function() { if(document.getElementById('mic-btn').disabled) resetBtn(); };
-        } catch (e) { logError("Mic Error: " + e); resetBtn(); }
+        } catch (e) { resetBtn(); }
     }
 
     function checkResultSmart(heardWords) {
@@ -442,10 +498,11 @@
         let stars = ""; for (let i = 0; i < 5; i++) { stars += (i < starCount) ? "⭐" : "☆"; }
         document.getElementById('stars').innerText = stars;
         document.getElementById('feedback').innerText = message;
+        document.getElementById('feedback').className = "feedback";
         playSoundSafeLocal(starCount === 5 ? 'win' : (starCount >= 3 ? 'correct' : 'wrong'));
         resetBtn();
     }
-    function resetBtn() { document.getElementById('mic-btn').disabled = false; document.getElementById('mic-btn').innerText = "🎤 Đọc Ngay"; }
+    function resetBtn() { document.getElementById('mic-btn').disabled = false; document.getElementById('mic-btn').innerText = "🎤 Đọc Ngay"; document.getElementById('feedback').className = "feedback"; }
     function playSoundSafeLocal(type) {
         try {
             let s; if(type==='win') s = audioWin; else if(type==='correct') s = audioCorrect; else s = audioWrong;
