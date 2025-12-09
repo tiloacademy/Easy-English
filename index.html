@@ -3,118 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Học tiếng Anh cùng Bé</title>
+    <title>Học Tiếng Anh cùng Bé</title>
     <style>
-        /* --- CÀI ĐẶT CHUNG --- */
+        /* --- CÀI ĐẶT GIAO DIỆN --- */
         :root {
             --primary-color: #00A4EF; 
             --bg-color: #fdf2e9; 
         }
         body { 
-            font-family: 'Segoe UI', Roboto, sans-serif; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             background-color: var(--bg-color); 
-            background-image: url('https://www.transparenttextures.com/patterns/notebook.png');
+            /* Họa tiết nền nhẹ */
+            background-image: radial-gradient(#e0e0e0 1px, transparent 1px);
+            background-size: 20px 20px;
             text-align: center; padding: 10px; margin: 0; user-select: none; 
             height: 100vh; overflow: hidden;
             display: flex; flex-direction: column; justify-content: center;
         }
         
-        /* KHUNG THẺ CHÍNH */
+        /* KHUNG CHỨA NỘI DUNG */
         .card-container { 
-            background: white; border-radius: 20px; 
-            padding: 15px; 
-            width: 100%; max-width: 500px; margin: 0 auto; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
+            background: white; border-radius: 25px; 
+            padding: 20px; 
+            width: 100%; max-width: 450px; margin: 0 auto; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
             height: 90vh; display: flex; flex-direction: column;
             box-sizing: border-box; position: relative;
+            border: 2px solid #fff;
         }
 
-        /* --- 1. GIAO DIỆN HỌC TẬP (LEARNING MODE) --- */
+        /* --- PHẦN HỌC TẬP --- */
         #learning-container {
             display: flex; flex-direction: column; height: 100%;
             justify-content: space-between;
+            opacity: 0; transition: opacity 0.5s; /* Hiệu ứng hiện dần */
         }
+        #learning-container.visible { opacity: 1; }
 
-        h1 { font-size: 22px; margin: 0 0 10px 0; color: #ff6f00; }
+        h1 { font-size: 24px; margin: 0 0 15px 0; color: #ff6f00; font-weight: 800; }
         
+        .image-area {
+            flex-grow: 1; display: flex; align-items: center; justify-content: center;
+            margin-bottom: 10px;
+        }
         #word-img { 
-            width: 100%; height: 250px; 
-            object-fit: contain; border-radius: 15px; margin-bottom: 10px;
+            max-width: 80%; max-height: 250px; 
+            object-fit: contain; 
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.1));
         }
 
-        .word-display { font-size: 36px; font-weight: bold; color: #333; margin: 5px 0; }
-        .phonetic { font-size: 20px; color: #666; font-family: 'Times New Roman', serif; margin-bottom: 10px; }
+        #text-area { margin-bottom: 10px; }
+        .word-display { font-size: 40px; font-weight: 900; color: #333; margin: 0; letter-spacing: 1px; }
+        .phonetic { font-size: 22px; color: #7f8c8d; font-family: 'Times New Roman', serif; margin-top: 5px; }
         
-        .stars { font-size: 30px; color: #FFD700; margin: 5px 0; height: 40px; }
-        .feedback { font-size: 16px; color: #555; height: 20px; font-style: italic; }
+        .stars { font-size: 32px; color: #FFD700; margin: 5px 0; height: 40px; text-shadow: 0 2px 2px rgba(0,0,0,0.1); }
+        .feedback { font-size: 18px; color: #27ae60; height: 25px; font-weight: bold; }
 
-        /* Nút Mic */
-        .btn-mic { 
-            background-color: #4CAF50; color: white; border: none; 
-            padding: 12px 0; width: 100%; border-radius: 50px; 
-            font-size: 20px; font-weight: bold; margin: 10px 0;
-            box-shadow: 0 4px #2e7d32; cursor: pointer;
+        /* Nút chung */
+        .btn-main { 
+            border: none; padding: 15px 0; width: 100%; border-radius: 50px; 
+            font-size: 20px; font-weight: bold; margin: 10px 0; cursor: pointer;
+            transition: transform 0.1s; color: white;
+            box-shadow: 0 4px rgba(0,0,0,0.2);
+            display: flex; align-items: center; justify-content: center; gap: 10px;
         }
-        .btn-mic:active { transform: translateY(2px); box-shadow: 0 1px #2e7d32; }
-
-        /* Thanh điều hướng bên dưới */
-        .nav-bar { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
-        .btn-arrow { background: #FF9800; border: none; width: 45px; height: 45px; border-radius: 50%; font-size: 20px; color: white; cursor: pointer; box-shadow: 0 3px #f57c00; }
+        .btn-main:active { transform: scale(0.98); box-shadow: 0 2px rgba(0,0,0,0.2); }
         
-        /* Nút Nghe lại */
-        .btn-listen-large {
+        .btn-mic { background-color: #4CAF50; }
+        .btn-play-game { background-color: #9C27B0; animation: pulse 2s infinite; }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(156, 39, 176, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(156, 39, 176, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(156, 39, 176, 0); }
+        }
+
+        /* Thanh điều hướng */
+        .nav-bar { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 10px; border-top: 1px solid #eee; }
+        .btn-arrow { 
+            background: #FF9800; border: none; width: 50px; height: 50px; border-radius: 50%; 
+            font-size: 24px; color: white; cursor: pointer; box-shadow: 0 3px #e65100; 
+            display: flex; align-items: center; justify-content: center;
+        }
+        
+        .btn-listen {
             background-color: white; color: #2196F3;
             border: 2px solid #2196F3;
-            padding: 10px 30px; font-size: 18px; border-radius: 30px;
+            padding: 10px 25px; font-size: 18px; border-radius: 30px;
             font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px;
-            box-shadow: 0 3px rgba(33, 150, 243, 0.2);
         }
-        .btn-listen-large:active { background-color: #e3f2fd; transform: translateY(2px); }
+        .btn-listen:active { background-color: #e3f2fd; }
 
-        /* Nút CHƠI GAME (Thay cho mic khi đến trang Game) */
-        .btn-play-game {
-            background-color: #9C27B0; color: white; border: none; 
-            padding: 15px 0; width: 100%; border-radius: 50px; 
-            font-size: 22px; font-weight: bold; margin: 10px 0;
-            box-shadow: 0 4px #7B1FA2; cursor: pointer;
-            animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        /* --- 2. GIAO DIỆN GAME (IFRAME NHÚNG WORDWALL) --- */
+        /* --- PHẦN NHÚNG GAME (WORDWALL) --- */
         #game-iframe-container {
-            display: none; /* Mặc định ẩn */
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #fff; z-index: 9999;
-            flex-direction: column;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff; z-index: 9999; flex-direction: column;
         }
-
-        /* Nút Thoát Game (Luôn nổi ở trên cùng) */
         .exit-game-bar {
-            background: #FF5722; color: white;
-            padding: 10px; text-align: left;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            background: #2c3e50; color: white; padding: 10px 15px;
             display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
         .btn-exit-game {
-            background: white; color: #FF5722; border: none;
-            padding: 5px 15px; border-radius: 20px; font-weight: bold;
-            cursor: pointer; font-size: 16px;
+            background: #e74c3c; color: white; border: none;
+            padding: 8px 20px; border-radius: 20px; font-weight: bold; cursor: pointer;
         }
     </style>
 </head>
 <body>
 
 <div class="card-container">
-    
     <div id="learning-container">
-        <h1 id="header-title">🐻 Học Tiếng Anh 🐰</h1>
+        <h1 id="header-title">Học Tiếng Anh 🐰</h1>
         
-        <img id="word-img" src="" alt="Learning">
+        <div class="image-area">
+            <img id="word-img" src="" alt="Learning" onerror="this.src='https://img.icons8.com/color/200/image.png'">
+        </div>
         
         <div id="text-area">
             <div class="word-display" id="word-text">...</div>
@@ -122,149 +126,171 @@
         </div>
 
         <div class="stars" id="stars">☆☆☆☆☆</div>
-        <div class="feedback" id="feedback">Sẵn sàng!</div>
+        <div class="feedback" id="feedback">Đang tải dữ liệu...</div>
 
         <div id="action-btn-area">
-            <button id="mic-btn" class="btn-mic" onclick="startListening()">🎤 Đọc Ngay</button>
-        </div>
+            </div>
 
         <div class="nav-bar">
-            <button class="btn-arrow" onclick="prevItem()">◀</button>
-            <button class="btn-listen-large" id="btn-replay-audio" onclick="playAudio()">🔊 Nghe lại</button>
-            <button class="btn-arrow" onclick="nextItem()">▶</button>
+            <button class="btn-arrow" onclick="changeItem(-1)">◀</button>
+            <button class="btn-listen" id="btn-replay-audio" onclick="speakCurrentWord()">
+                🔊 Nghe lại
+            </button>
+            <button class="btn-arrow" onclick="changeItem(1)">▶</button>
         </div>
     </div>
-
 </div>
 
 <div id="game-iframe-container">
     <div class="exit-game-bar">
-        <span style="font-weight:bold;">🎮 Đang chơi...</span>
-        <button class="btn-exit-game" onclick="closeGame()">❌ Quay về bài học</button>
+        <span style="font-size:18px; font-weight:bold;">🎮 Trò chơi</span>
+        <button class="btn-exit-game" onclick="closeGame()">❌ Quay về</button>
     </div>
     <iframe id="wordwall-frame" src="" style="width:100%; height:100%; border:none;" allowfullscreen></iframe>
 </div>
 
 <script>
-    // --- DỮ LIỆU BÀI HỌC ---
-    const items = [
+    // DỮ LIỆU BÀI HỌC (Đã cập nhật link ảnh ổn định từ Icons8)
+    const lessonData = [
         // NHÓM 1: ÂM /ɪr/
-        { type: "word", text: "Beer", ipa: "/bɪər/", img: "https://cdn-icons-png.flaticon.com/512/931/931949.png", speak: "beer" },
-        { type: "word", text: "Deer", ipa: "/dɪər/", img: "https://cdn-icons-png.flaticon.com/512/2313/2313328.png", speak: "deer" },
-        { type: "word", text: "Ear", ipa: "/ɪər/", img: "https://cdn-icons-png.flaticon.com/512/822/822102.png", speak: "ear" },
-        { type: "word", text: "Tear", ipa: "/tɪər/", img: "https://cdn-icons-png.flaticon.com/512/334/334056.png", speak: "tier" },
+        { type: "word", text: "Beer", ipa: "/bɪər/", img: "https://img.icons8.com/color/200/beer.png", speak: "beer" },
+        { type: "word", text: "Deer", ipa: "/dɪər/", img: "https://img.icons8.com/color/200/deer.png", speak: "deer" },
+        { type: "word", text: "Ear", ipa: "/ɪər/", img: "https://img.icons8.com/color/200/ear.png", speak: "ear" },
+        { type: "word", text: "Tear", ipa: "/tɪər/", img: "https://img.icons8.com/color/200/crying.png", speak: "tier" }, // tier phát âm giống tear (nước mắt)
         
-        // GAME 1: /ɪr/ sound (Wordwall)
+        // GAME 1 LINK
         { 
             type: "game-link", 
             title: "Trò chơi /ɪr/", 
-            img: "https://cdn-icons-png.flaticon.com/512/526/526045.png", // Icon Gamepad
-            // Link Wordwall Embed chuẩn (đã chuyển đổi từ link bạn gửi)
+            img: "https://img.icons8.com/color/200/controller.png", 
             url: "https://wordwall.net/embed/resource/103738616" 
         },
 
         // NHÓM 2: ÂM /ɛr/
-        { type: "word", text: "Bear", ipa: "/bɛər/", img: "https://cdn-icons-png.flaticon.com/512/427/427514.png", speak: "bear" },
-        { type: "word", text: "Pear", ipa: "/pɛər/", img: "https://cdn-icons-png.flaticon.com/512/1135/1135543.png", speak: "pear" },
-        { type: "word", text: "Chair", ipa: "/tʃɛər/", img: "https://cdn-icons-png.flaticon.com/512/2663/2663523.png", speak: "chair" },
+        { type: "word", text: "Bear", ipa: "/bɛər/", img: "https://img.icons8.com/color/200/bear.png", speak: "bear" },
+        { type: "word", text: "Pear", ipa: "/pɛər/", img: "https://img.icons8.com/color/200/pear.png", speak: "pear" },
+        { type: "word", text: "Chair", ipa: "/tʃɛər/", img: "https://img.icons8.com/color/200/chair.png", speak: "chair" },
 
-        // GAME 2: /ɛr/ sound (Wordwall)
+        // GAME 2 LINK
         { 
             type: "game-link", 
             title: "Trò chơi /ɛr/", 
-            img: "https://cdn-icons-png.flaticon.com/512/526/526045.png", // Icon Gamepad
-            // Link Wordwall Embed chuẩn (đã chuyển đổi từ link bạn gửi)
+            img: "https://img.icons8.com/color/200/controller.png", 
             url: "https://wordwall.net/embed/resource/103753995" 
         }
     ];
 
     let currentIndex = 0;
 
-    // --- KHỞI TẠO ---
-    window.onload = () => {
-        loadItem(0);
-    };
+    // CHẠY KHI TRANG ĐÃ TẢI XONG (Sửa lỗi màn hình trắng)
+    document.addEventListener('DOMContentLoaded', () => {
+        try {
+            loadItem(0);
+            document.getElementById('learning-container').classList.add('visible');
+        } catch (e) {
+            alert("Có lỗi xảy ra: " + e.message);
+        }
+    });
 
     function loadItem(index) {
+        if (index < 0 || index >= lessonData.length) return;
         currentIndex = index;
-        const item = items[index];
-        const actionArea = document.getElementById('action-btn-area');
-        const replayBtn = document.getElementById('btn-replay-audio');
-        
-        // Cập nhật giao diện chung
+        const item = lessonData[index];
+
+        // Cập nhật Ảnh và Chữ
         document.getElementById('word-img').src = item.img;
         
+        const actionArea = document.getElementById('action-btn-area');
+        const replayBtn = document.getElementById('btn-replay-audio');
+        const feedback = document.getElementById('feedback');
+
         if (item.type === 'word') {
-            // -- CHẾ ĐỘ TỪ VỰNG --
+            // --- CHẾ ĐỘ TỪ VỰNG ---
             document.getElementById('header-title').innerText = "🐻 Học Phát Âm 🐰";
             document.getElementById('word-text').innerText = item.text;
             document.getElementById('phonetic').innerText = item.ipa;
             document.getElementById('phonetic').style.display = "block";
             document.getElementById('stars').style.visibility = "visible";
-            document.getElementById('feedback').innerText = "Sẵn sàng!";
+            document.getElementById('stars').innerText = "☆☆☆☆☆";
+            feedback.innerText = "Sẵn sàng!";
             replayBtn.style.visibility = "visible";
 
-            // Hiển thị nút Mic
-            actionArea.innerHTML = `<button id="mic-btn" class="btn-mic" onclick="startListening()">🎤 Đọc Ngay</button>`;
+            // Nút Mic
+            actionArea.innerHTML = `<button class="btn-main btn-mic" onclick="simulateListening()">🎤 Đọc Ngay</button>`;
             
-            // Tự đọc mẫu
-            setTimeout(() => playAudio(), 500);
+            // Tự đọc sau 0.5s
+            setTimeout(speakCurrentWord, 500);
 
         } else if (item.type === 'game-link') {
-            // -- CHẾ ĐỘ LINK GAME --
+            // --- CHẾ ĐỘ GAME ---
             document.getElementById('header-title').innerText = "🎮 Giờ Chơi Đến Rồi!";
             document.getElementById('word-text').innerText = item.title;
             document.getElementById('phonetic').style.display = "none";
             document.getElementById('stars').style.visibility = "hidden";
-            document.getElementById('feedback').innerText = "Bé hãy bấm nút bên dưới để chơi nhé!";
-            replayBtn.style.visibility = "hidden"; // Ẩn nút nghe lại
+            feedback.innerText = "Bé hãy bấm nút bên dưới để chơi nhé!";
+            replayBtn.style.visibility = "hidden";
 
-            // Hiển thị nút BẮT ĐẦU GAME
-            actionArea.innerHTML = `<button class="btn-play-game" onclick="openGame('${item.url}')">🚀 Bắt đầu Chơi</button>`;
+            // Nút Chơi Game
+            actionArea.innerHTML = `<button class="btn-main btn-play-game" onclick="openGame('${item.url}')">🚀 Bắt đầu Chơi</button>`;
         }
     }
 
-    // --- CÁC HÀM ĐIỀU HƯỚNG ---
-    function nextItem() {
-        if (currentIndex < items.length - 1) loadItem(currentIndex + 1);
-    }
-    
-    function prevItem() {
-        if (currentIndex > 0) loadItem(currentIndex - 1);
+    // Điều hướng
+    function changeItem(direction) {
+        const newIndex = currentIndex + direction;
+        if (newIndex >= 0 && newIndex < lessonData.length) {
+            loadItem(newIndex);
+        }
     }
 
-    // --- XỬ LÝ WORDWALL ---
-    function openGame(url) {
-        const iframeContainer = document.getElementById('game-iframe-container');
-        const iframe = document.getElementById('wordwall-frame');
+    // Đọc từ (Sử dụng API giọng nói của trình duyệt)
+    function speakCurrentWord() {
+        const item = lessonData[currentIndex];
+        if (item.type === 'word' && window.speechSynthesis) {
+            window.speechSynthesis.cancel(); // Dừng âm thanh cũ
+            const utterance = new SpeechSynthesisUtterance(item.speak);
+            utterance.lang = 'en-US'; 
+            utterance.rate = 0.8; // Đọc chậm một chút cho bé nghe
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    // Giả lập nghe (Vì mic thật cần server bảo mật, dùng giả lập cho demo)
+    function simulateListening() {
+        const feedback = document.getElementById('feedback');
+        feedback.innerText = "👂 Đang nghe...";
+        feedback.style.color = "#d35400";
         
-        iframe.src = url; // Gán link game
-        iframeContainer.style.display = 'flex'; // Hiện khung game
+        setTimeout(() => {
+            document.getElementById('stars').innerText = "⭐⭐⭐⭐⭐";
+            feedback.innerText = "Tuyệt vời! Chính xác!";
+            feedback.style.color = "#27ae60";
+            // Phát âm thanh chúc mừng
+            speakText("Good job!");
+        }, 1500);
+    }
+    
+    function speakText(text) {
+        if(window.speechSynthesis) {
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'en-US';
+            window.speechSynthesis.speak(u);
+        }
+    }
+
+    // Xử lý iframe Game
+    function openGame(url) {
+        const frame = document.getElementById('wordwall-frame');
+        const container = document.getElementById('game-iframe-container');
+        frame.src = url;
+        container.style.display = 'flex';
     }
 
     function closeGame() {
-        const iframeContainer = document.getElementById('game-iframe-container');
-        const iframe = document.getElementById('wordwall-frame');
-        
-        iframe.src = ""; // Xóa link để dừng nhạc/game
-        iframeContainer.style.display = 'none'; // Ẩn khung game
-    }
-
-    // --- ÂM THANH & MIC (Giữ nguyên) ---
-    function playAudio() {
-        const item = items[currentIndex];
-        if (item.type !== 'word') return;
-        const u = new SpeechSynthesisUtterance(item.speak);
-        u.lang = 'en-US';
-        window.speechSynthesis.speak(u);
-    }
-
-    function startListening() {
-        document.getElementById('feedback').innerText = "Đang nghe...";
-        setTimeout(() => {
-            document.getElementById('stars').innerText = "⭐⭐⭐⭐⭐";
-            document.getElementById('feedback').innerText = "Tuyệt vời!";
-        }, 1500);
+        const frame = document.getElementById('wordwall-frame');
+        const container = document.getElementById('game-iframe-container');
+        frame.src = ""; // Tắt game/nhạc
+        container.style.display = 'none';
     }
 </script>
 
