@@ -7,21 +7,25 @@
     <style>
         body { font-family: 'Arial', sans-serif; background-color: #e0f7fa; text-align: center; padding: 10px; margin: 0; user-select: none; }
         
+        /* Container chính */
         .card { background: white; border-radius: 20px; padding: 15px; max-width: 600px; margin: 10px auto; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 5px solid #FFD700; min-height: 600px; position: relative; box-sizing: border-box; }
         
-        #debug-console { display: none; background: #333; color: #0f0; font-family: monospace; font-size: 12px; text-align: left; padding: 10px; margin: 10px auto; width: 90%; border-radius: 5px; }
+        /* KHUNG BÁO LỖI (Chỉ hiện khi có lỗi) */
+        #error-log { display: none; background: #ffebee; color: #c62828; padding: 10px; border: 1px solid red; margin-bottom: 10px; text-align: left; font-size: 12px; white-space: pre-wrap; }
 
+        /* KHU VỰC HIỂN THỊ CHUNG */
         .content-box { width: 100%; margin: 0 auto; border-radius: 15px; background: #fff; position: relative; min-height: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         
+        /* Style cho Ảnh bài học */
         #word-img { max-width: 100%; max-height: 250px; object-fit: contain; border: 2px dashed #ddd; border-radius: 15px; margin-top: 10px;}
 
-        /* --- STYLE CHO GAME LẬT HÌNH (MEMORY) --- */
+        /* --- STYLE CHO GAME MEMORY (LẬT HÌNH) --- */
         .game-area { width: 100%; display: none; flex-direction: column; align-items: center; gap: 15px; padding: 10px; box-sizing: border-box; }
         
         .memory-grid { 
             display: grid; 
-            grid-template-columns: repeat(4, 1fr); /* 4 cột */
-            gap: 10px; 
+            grid-template-columns: repeat(4, 1fr); /* 4 cột - Trên điện thoại sẽ tự nhỏ lại */
+            gap: 8px; 
             width: 100%;
             max-width: 400px;
         }
@@ -29,8 +33,8 @@
         .memory-card {
             background-color: transparent;
             width: 100%;
-            aspect-ratio: 1/1; /* Hình vuông */
-            perspective: 1000px; /* Tạo chiều sâu 3D */
+            aspect-ratio: 1/1; 
+            perspective: 1000px; 
             cursor: pointer;
         }
 
@@ -42,12 +46,11 @@
             transition: transform 0.6s;
             transform-style: preserve-3d;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            border-radius: 10px;
+            border-radius: 8px;
         }
 
-        /* Khi lật thẻ */
         .memory-card.flipped .memory-inner { transform: rotateY(180deg); }
-        .memory-card.matched .memory-inner { transform: rotateY(180deg); opacity: 0.5; } /* Đã đúng thì làm mờ */
+        .memory-card.matched .memory-inner { transform: rotateY(180deg); opacity: 0; pointer-events: none; } /* Đã đúng thì biến mất */
 
         .memory-front, .memory-back {
             position: absolute;
@@ -55,34 +58,21 @@
             height: 100%;
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
-            border-radius: 10px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             border: 2px solid #FF9800;
-        }
-
-        /* Mặt sau (Úp xuống) */
-        .memory-front {
-            background-color: #FF9800;
-            color: white;
-            font-size: 30px;
-            font-weight: bold;
-        }
-
-        /* Mặt trước (Ngửa lên - Hình hoặc Chữ) */
-        .memory-back {
-            background-color: white;
-            color: black;
-            transform: rotateY(180deg);
-            padding: 2px;
             box-sizing: border-box;
+            padding: 2px;
         }
 
+        /* Mặt sau (Úp) */
+        .memory-front { background-color: #FF9800; color: white; font-size: 24px; font-weight: bold; }
+        /* Mặt trước (Ngửa) */
+        .memory-back { background-color: white; color: black; transform: rotateY(180deg); }
         .memory-back img { max-width: 90%; max-height: 90%; object-fit: contain; }
-        .memory-back span { font-weight: bold; font-size: 14px; word-break: break-all;}
-
-        /* ------------------------------------- */
+        .memory-back span { font-weight: bold; font-size: 13px; word-break: break-word; }
 
         h1 { color: #ff6f00; font-size: 22px; margin: 10px 0; }
         h2 { color: #333; font-size: 38px; margin: 5px 0; letter-spacing: 2px; }
@@ -111,16 +101,15 @@
 
 <div class="card">
     <h1 id="header-title">🐻 Học phát âm 🐰</h1>
-    <div id="debug-console"></div>
+    
+    <div id="error-log"></div>
 
     <div class="content-box" id="content-box">
         <img id="word-img" src="" alt="Hình ảnh minh họa" onerror="handleImgError(this)">
         
         <div id="game-area" class="game-area">
             <div style="color: #555; font-size: 14px;">Lật 2 thẻ giống nhau (Hình - Chữ):</div>
-            
             <div id="memory-grid" class="memory-grid"></div>
-            
             <div id="game-win-msg" style="display:none; color: green; font-size: 20px; font-weight: bold; margin-top: 15px; animation: pulse 1s infinite;">
                 🎉 CHIẾN THẮNG! 🎉
             </div>
@@ -150,23 +139,38 @@
 </div>
 
 <script>
-    // --- HỆ THỐNG LOG ---
-    function logError(msg) { console.error(msg); }
-    function handleImgError(img) { if(img.src && !img.src.includes('placeholder')) { img.src = 'https://via.placeholder.com/300x200?text=Ảnh+Lỗi'; img.style.border = "2px solid red"; } }
+    // --- HỆ THỐNG XỬ LÝ LỖI (QUAN TRỌNG) ---
+    function logError(msg) {
+        const errEl = document.getElementById('error-log');
+        errEl.style.display = 'block';
+        errEl.innerHTML += "⚠️ " + msg + "<br>";
+        console.error(msg);
+    }
+
+    // ĐÂY LÀ HÀM BỊ THIẾU Ở CODE CŨ GÂY RA LỖI
+    function handleImgError(img) {
+        if(img.src && !img.src.includes('placeholder')) {
+            // Không báo lỗi ầm ĩ, chỉ thay ảnh
+            img.src = 'https://via.placeholder.com/300x200?text=Ảnh+Lỗi';
+        }
+    }
 
     // --- DỮ LIỆU ---
     const items = [
+        // NHÓM 1: ÂM /ɪr/
         { word: "beer", ipa: "/ɪr/", img: "beer.png", type: "word", speakText: "beer", similar: ["bear", "beard", "pier", "beers"] }, 
         { word: "deer", ipa: "/ɪr/", img: "deer.png", type: "word", speakText: "deer", similar: ["dear", "dare", "tear", "there"] }, 
         { word: "cheer", ipa: "/ɪr/", img: "cheer.png", type: "word", speakText: "cheer", similar: ["chair", "cheers", "sheer", "chia"] }, 
         { word: "tear", ipa: "/ɪr/", img: "tear.png", type: "word", speakText: "tier", similar: ["tier", "tea", "here", "tears"] }, 
         { word: "ear", ipa: "/ɪr/", img: "ear.png", type: "word", speakText: "ear", similar: ["year", "here", "ears", "air", "yeah", "hear", "near"] }, 
+        // NHÓM 2: ÂM /ɛr/
         { word: "bear", ipa: "/ɛr/", img: "bear.png", type: "word", speakText: "bear", similar: ["bare", "beer", "pair", "bears", "bar"] }, 
         { word: "pear", ipa: "/ɛr/", img: "pear.png", type: "word", speakText: "pear", similar: ["pair", "pare", "bear", "pears"] }, 
         { word: "share", ipa: "/ɛr/", img: "share.png", type: "word", speakText: "share", similar: ["chair", "sure", "cher", "shared"] }, 
         { word: "stair", ipa: "/ɛr/", img: "stair.png", type: "word", speakText: "stair", similar: ["stare", "star", "stairs", "stay"] }, 
         { word: "chair", ipa: "/ɛr/", img: "chair.png", type: "word", speakText: "chair", similar: ["cheer", "share", "chairs", "care"] },
         
+        // CÂU
         { 
             type: "sentence", word: "The deer is near the chair", img: "sentence_deer.png",
             htmlParts: [ {text: "The", ipa: "ðə"}, {text: "deer", ipa: "ɪr"}, {text: "is", ipa: "ɪz"}, {text: "near", ipa: "ɪr"}, {text: "the", ipa: "ðə"}, {text: "chair.", ipa: "tʃ ɛr"} ],
@@ -189,20 +193,25 @@
     let audioWin, audioCorrect, audioWrong;
     
     // Biến cho Game Memory
-    let memoryCards = [];
     let hasFlippedCard = false;
     let lockBoard = false;
     let firstCard, secondCard;
     let matchedPairs = 0;
 
+    // --- KHỞI TẠO AN TOÀN ---
     window.onload = function() {
         try {
             document.getElementById('feedback').innerText = "Sẵn sàng!";
             loadItem(0, false);
-            audioWin = new Audio("win.mp3");
-            audioCorrect = new Audio("correct.mp3");
-            audioWrong = new Audio("wrong.mp3");
-        } catch (e) {}
+            
+            // Thử nạp âm thanh (trong khối try catch để không chết app nếu lỗi file)
+            try { audioWin = new Audio("win.mp3"); } catch(e){}
+            try { audioCorrect = new Audio("correct.mp3"); } catch(e){}
+            try { audioWrong = new Audio("wrong.mp3"); } catch(e){}
+            
+        } catch (e) {
+            logError("Lỗi khởi động: " + e.message);
+        }
     };
 
     function loadItem(index, autoPlay = true) {
@@ -251,10 +260,12 @@
                 }
                 if(autoPlay) setTimeout(() => { playSampleSafe(); }, 500);
             }
-        } catch(e) {}
+        } catch(e) {
+            logError("Lỗi tải bài học: " + e.message);
+        }
     }
 
-    // --- LOGIC GAME MEMORY (LẬT HÌNH) ---
+    // --- LOGIC GAME MEMORY ---
     function setupMemoryGame() {
         const currentItem = items[currentIndex];
         const targetWords = currentItem.gameData;
@@ -264,39 +275,35 @@
         grid.innerHTML = "";
         winMsg.style.display = "none";
         
-        // Reset biến game
         hasFlippedCard = false;
         lockBoard = false;
         firstCard = null;
         secondCard = null;
         matchedPairs = 0;
 
-        // Tạo bộ bài: 5 hình + 5 chữ = 10 thẻ
         let cards = [];
         targetWords.forEach(wordKey => {
             let originalObj = items.find(i => i.word === wordKey);
-            // Thẻ Hình
-            cards.push({ key: wordKey, type: 'img', content: `<img src="${originalObj.img}">` });
-            // Thẻ Chữ
-            cards.push({ key: wordKey, type: 'text', content: `<span>${wordKey.toUpperCase()}</span>` });
+            if(originalObj) {
+                cards.push({ key: wordKey, type: 'img', content: `<img src="${originalObj.img}">` });
+                cards.push({ key: wordKey, type: 'text', content: `<span>${wordKey.toUpperCase()}</span>` });
+            } else {
+                logError("Không tìm thấy dữ liệu cho game: " + wordKey);
+            }
         });
 
-        // Trộn bài
         cards.sort(() => 0.5 - Math.random());
 
-        // Vẽ lưới
         cards.forEach(cardData => {
             const cardEl = document.createElement('div');
             cardEl.classList.add('memory-card');
             cardEl.dataset.key = cardData.key;
-            
             cardEl.innerHTML = `
                 <div class="memory-inner">
                     <div class="memory-front">?</div>
                     <div class="memory-back">${cardData.content}</div>
                 </div>
             `;
-            
             cardEl.addEventListener('click', flipCard);
             grid.appendChild(cardEl);
         });
@@ -304,18 +311,16 @@
 
     function flipCard() {
         if (lockBoard) return;
-        if (this === firstCard) return; // Không cho bấm 2 lần vào 1 thẻ
+        if (this === firstCard) return;
 
         this.classList.add('flipped');
 
         if (!hasFlippedCard) {
-            // Lần bấm thứ 1
             hasFlippedCard = true;
             firstCard = this;
             return;
         }
 
-        // Lần bấm thứ 2
         secondCard = this;
         checkForMatch();
     }
@@ -326,7 +331,6 @@
         if (isMatch) {
             disableCards();
             playSoundSafeLocal('correct');
-            // Đọc từ
             let u = new SpeechSynthesisUtterance(firstCard.dataset.key);
             u.lang = 'en-US';
             window.speechSynthesis.speak(u);
@@ -340,17 +344,19 @@
         firstCard.removeEventListener('click', flipCard);
         secondCard.removeEventListener('click', flipCard);
         
-        // Hiệu ứng mờ đi
-        firstCard.classList.add('matched');
-        secondCard.classList.add('matched');
+        // Đánh dấu đã khớp (ẩn đi)
+        setTimeout(() => {
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+            resetBoard();
+        }, 500);
 
-        resetBoard();
         matchedPairs++;
         if (matchedPairs === 5) {
             setTimeout(() => {
                 document.getElementById('game-win-msg').style.display = 'block';
                 playSoundSafeLocal('win');
-            }, 500);
+            }, 800);
         }
     }
 
@@ -360,7 +366,7 @@
             firstCard.classList.remove('flipped');
             secondCard.classList.remove('flipped');
             resetBoard();
-        }, 1000); // Úp lại sau 1s
+        }, 1200);
     }
 
     function resetBoard() {
@@ -368,7 +374,7 @@
         [firstCard, secondCard] = [null, null];
     }
 
-    // --- CÁC HÀM CHUNG ---
+    // --- ĐIỀU HƯỚNG & HỖ TRỢ ---
     function nextItem() { if (currentIndex < items.length - 1) { currentIndex++; loadItem(currentIndex, true); } }
     function prevItem() { if (currentIndex > 0) { currentIndex--; loadItem(currentIndex, true); } }
     
@@ -412,7 +418,7 @@
             };
             recognition.onerror = function() { clearTimeout(recognitionTimeout); document.getElementById('feedback').innerText = "Thử lại nào!"; resetBtn(); };
             recognition.onend = function() { if(document.getElementById('mic-btn').disabled) resetBtn(); };
-        } catch (e) { resetBtn(); }
+        } catch (e) { logError("Mic Error: " + e); resetBtn(); }
     }
 
     function checkResultSmart(heardWords) {
