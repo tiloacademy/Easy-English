@@ -5,45 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Học tiếng Anh thật dễ</title>
     <style>
-        body { font-family: 'Arial', sans-serif; background-color: #e0f7fa; text-align: center; padding: 10px; }
+        body { font-family: 'Arial', sans-serif; background-color: #e0f7fa; text-align: center; padding: 10px; margin: 0; }
         
         /* Container chính */
-        .card { background: white; border-radius: 20px; padding: 20px; max-width: 600px; margin: 0 auto; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 5px solid #FFD700; min-height: 550px; position: relative; }
+        .card { background: white; border-radius: 20px; padding: 15px; max-width: 600px; margin: 10px auto; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 5px solid #FFD700; min-height: 550px; position: relative; box-sizing: border-box; }
         
         /* Khu vực hiển thị Hình ảnh / Game */
-        .content-box { width: 100%; height: 300px; margin: 0 auto; overflow: hidden; border-radius: 15px; border: 2px dashed #ddd; background: #fff; display: flex; align-items: center; justify-content: center; position: relative; }
+        .content-box { width: 100%; height: 280px; margin: 0 auto; overflow: hidden; border-radius: 15px; border: 2px dashed #ddd; background: #fff; display: flex; align-items: center; justify-content: center; position: relative; }
         img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        
-        /* Iframe cho Game */
         iframe { width: 100%; height: 100%; border: none; }
 
-        h1 { color: #ff6f00; font-size: 24px; margin: 10px 0; }
+        h1 { color: #ff6f00; font-size: 22px; margin: 10px 0; }
         
         /* Style cho Từ đơn */
-        h2 { color: #333; font-size: 40px; margin: 5px 0; letter-spacing: 2px; }
+        h2 { color: #333; font-size: 38px; margin: 5px 0; letter-spacing: 2px; }
         .phonetic { color: #888; font-size: 20px; margin-bottom: 10px; font-family: 'Times New Roman', serif; }
 
-        /* Style cho Câu */
-        .sentence-container { display: none; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 10px 0; }
+        /* Style cho Câu (IPA trên đầu) */
+        .sentence-container { display: none; justify-content: center; flex-wrap: wrap; gap: 8px; margin: 15px 0; }
         .word-block { display: flex; flex-direction: column; align-items: center; }
-        .ipa-top { color: #ff3b30; font-size: 18px; font-weight: bold; margin-bottom: -5px; font-family: sans-serif; }
-        .text-bottom { color: #000; font-size: 28px; font-weight: normal; }
+        .ipa-top { color: #ff3b30; font-size: 16px; font-weight: bold; margin-bottom: 2px; font-family: sans-serif; }
+        .text-bottom { color: #000; font-size: 26px; font-weight: normal; }
         
         /* Nút bấm */
         .btn { border: none; border-radius: 50px; cursor: pointer; margin: 10px 5px; box-shadow: 0 4px #999; transition: 0.1s; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; color: white; }
         .btn:active { transform: translateY(4px); box-shadow: 0 0 #666; }
         .btn:disabled { background-color: #ccc !important; color: #666; cursor: not-allowed; box-shadow: none; transform: none; }
 
-        .btn-mic { background-color: #4CAF50; padding: 15px 30px; font-size: 20px; width: 80%; }
+        .btn-mic { background-color: #4CAF50; padding: 12px 30px; font-size: 18px; width: 80%; }
         .btn-sample { background-color: #2196F3; padding: 10px 20px; font-size: 16px; }
         
-        /* Nút điều hướng to rõ */
-        .nav-container { margin-top: 20px; display: flex; justify-content: space-between; padding: 0 10px; }
-        .btn-nav { background-color: #FF9800; padding: 10px; font-size: 20px; width: 50px; height: 50px; border-radius: 50%; }
+        /* Nút điều hướng */
+        .nav-container { margin-top: 15px; display: flex; justify-content: space-between; padding: 0 5px; }
+        .btn-nav { background-color: #FF9800; padding: 0; font-size: 24px; width: 50px; height: 50px; border-radius: 50%; line-height: 50px; }
 
         /* Khu vực chấm điểm */
         .stars { font-size: 40px; color: #FFD700; height: 50px; margin: 5px 0; }
-        .feedback { font-size: 16px; color: #555; min-height: 40px; margin-bottom: 10px; font-style: italic; padding: 5px; border: 1px dotted #ccc; border-radius: 5px;}
+        .feedback { font-size: 16px; color: #555; min-height: 40px; margin-bottom: 5px; font-style: italic; padding: 5px; border: 1px dotted #ccc; border-radius: 5px;}
         
         .listening { animation: pulse 1.5s infinite; background-color: #ff5722 !important; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
@@ -55,14 +53,14 @@
     <h1 id="header-title">🐻 Học phát âm 🐰</h1>
     
     <div class="content-box" id="content-box">
-        <img id="word-img" src="" alt="Word Image" onerror="this.onerror=null; this.src='https://via.placeholder.com/300x200?text=No+Image';">
+        <img id="word-img" src="" alt="Hình ảnh minh họa" onerror="this.onerror=null; this.src='https://via.placeholder.com/300x200?text=Vui+Lòng+Chờ';">
         <iframe id="game-frame" src="" style="display:none;" allowfullscreen></iframe>
     </div>
 
     <div id="learning-section">
         <div id="single-word-area">
-            <h2 id="word-text">WORD</h2>
-            <div class="phonetic" id="phonetic">/IPA/</div>
+            <h2 id="word-text">...</h2>
+            <div class="phonetic" id="phonetic">...</div>
         </div>
 
         <div id="sentence-area" class="sentence-container"></div>
@@ -70,14 +68,14 @@
         <button class="btn btn-sample" onclick="playSampleSafe()">🔊 Nghe mẫu</button>
 
         <div class="stars" id="stars">☆☆☆☆☆</div>
-        <div class="feedback" id="feedback">Đang tải...</div>
+        <div class="feedback" id="feedback">Đang tải dữ liệu...</div>
 
         <button id="mic-btn" class="btn btn-mic" onclick="startListeningSafe()">🎤 Đọc Ngay</button>
     </div>
 
     <div id="game-controls" style="display:none; margin-top:10px;">
-        <p style="color:#555; font-style:italic;">Chờ game tải xíu nhé...</p>
-        <a id="game-link-btn" href="" target="_blank" class="btn" style="background-color: #9C27B0; text-decoration: none; padding: 10px 20px;">🎮 Mở Game Lớn (Nếu lỗi)</a>
+        <p style="color:#555; font-size: 14px; margin: 5px;">Chờ game tải xíu nhé...</p>
+        <a id="game-link-btn" href="" target="_blank" class="btn" style="background-color: #9C27B0; text-decoration: none; padding: 10px 20px; font-size: 14px;">🎮 Mở Game Lớn (Nếu lỗi)</a>
     </div>
 
     <div class="nav-container">
@@ -87,48 +85,47 @@
 </div>
 
 <script>
-    /* DANH SÁCH BÀI HỌC */
+    // --- DANH SÁCH BÀI HỌC ---
     const items = [
-        // --- PHẦN 1: TỪ VỰNG ---
+        // NHÓM 1: ÂM /ɪr/
         { word: "beer", ipa: "/ɪr/", img: "beer.png", type: "word", speakText: "beer", similar: ["bear", "beard", "pier", "beers"] }, 
         { word: "deer", ipa: "/ɪr/", img: "deer.png", type: "word", speakText: "deer", similar: ["dear", "dare", "tear", "there"] }, 
         { word: "cheer", ipa: "/ɪr/", img: "cheer.png", type: "word", speakText: "cheer", similar: ["chair", "cheers", "sheer", "chia"] }, 
         { word: "tear", ipa: "/ɪr/", img: "tear.png", type: "word", speakText: "tier", similar: ["tier", "tea", "here", "tears"] }, 
         { word: "ear", ipa: "/ɪr/", img: "ear.png", type: "word", speakText: "ear", similar: ["year", "here", "ears", "air", "yeah", "hear", "near"] }, 
         
+        // NHÓM 2: ÂM /ɛr/
         { word: "bear", ipa: "/ɛr/", img: "bear.png", type: "word", speakText: "bear", similar: ["bare", "beer", "pair", "bears", "bar"] }, 
         { word: "pear", ipa: "/ɛr/", img: "pear.png", type: "word", speakText: "pear", similar: ["pair", "pare", "bear", "pears"] }, 
         { word: "share", ipa: "/ɛr/", img: "share.png", type: "word", speakText: "share", similar: ["chair", "sure", "cher", "shared"] }, 
         { word: "stair", ipa: "/ɛr/", img: "stair.png", type: "word", speakText: "stair", similar: ["stare", "star", "stairs", "stay"] }, 
         { word: "chair", ipa: "/ɛr/", img: "chair.png", type: "word", speakText: "chair", similar: ["cheer", "share", "chairs", "care"] },
 
-        // --- PHẦN 2: CÂU ---
+        // NHÓM 3: CÂU (IPA ĐỎ TRÊN CHỮ ĐEN)
         { 
             type: "sentence",
             word: "The deer is near the chair", 
             img: "sentence_deer.png",
-            htmlParts: [ {text: "The", ipa: "ðə"}, {text: "deer", ipa: "ɪr"}, {text: "is", ipa: "ɪz"}, {text: "near", ipa: "ɪr"}, {text: "the", ipa: "ðə"}, {text: "chair.", ipa: "tʃ ɛr"} ],
+            htmlParts: [ 
+                {text: "The", ipa: "ðə"}, {text: "deer", ipa: "ɪr"}, {text: "is", ipa: "ɪz"}, 
+                {text: "near", ipa: "ɪr"}, {text: "the", ipa: "ðə"}, {text: "chair.", ipa: "tʃ ɛr"} 
+            ],
             similar: ["the deer is near the chair", "deer near chair"]
         },
         { 
             type: "sentence",
             word: "The bear shares the pear",
             img: "sentence_bear.png",
-            htmlParts: [ {text: "The", ipa: "ðə"}, {text: "bear", ipa: "ɛr"}, {text: "shares", ipa: "ʃ ɛr"}, {text: "the", ipa: "ðə"}, {text: "pear.", ipa: "ɛr"} ],
+            htmlParts: [ 
+                {text: "The", ipa: "ðə"}, {text: "bear", ipa: "ɛr"}, {text: "shares", ipa: "ʃ ɛr"}, 
+                {text: "the", ipa: "ðə"}, {text: "pear.", ipa: "ɛr"} 
+            ],
             similar: ["the bear shares the pear", "bear shares pear"]
         },
 
-        // --- PHẦN 3: TRÒ CHƠI WORDWALL (Đã sửa tiêu đề) ---
-        { 
-            type: "game", 
-            title: "Trò chơi với âm /ɪr/", // Sửa tiêu đề 1
-            url: "https://wordwall.net/embed/resource/103738616" 
-        },
-        { 
-            type: "game", 
-            title: "Trò chơi với âm /ɛr/", // Sửa tiêu đề 2
-            url: "https://wordwall.net/embed/resource/103753995" 
-        }
+        // NHÓM 4: TRÒ CHƠI
+        { type: "game", title: "Trò chơi với âm /ɪr/", url: "https://wordwall.net/embed/resource/103738616" },
+        { type: "game", title: "Trò chơi với âm /ɛr/", url: "https://wordwall.net/embed/resource/103753995" }
     ];
 
     let currentIndex = 0;
@@ -136,17 +133,23 @@
     let recognitionTimeout;
     let audioWin, audioCorrect, audioWrong;
 
+    // --- KHỞI TẠO AN TOÀN ---
     window.onload = function() {
         try {
             document.getElementById('feedback').innerText = "Sẵn sàng! Bấm nút để học.";
-            loadItem(0);
+            // Load bài đầu tiên nhưng KHÔNG tự đọc (autoPlay = false) để tránh lỗi treo máy
+            loadItem(0, false);
+            
+            // Nạp âm thanh (sẽ chỉ chạy khi tương tác)
             audioWin = new Audio("win.mp3");
             audioCorrect = new Audio("correct.mp3");
             audioWrong = new Audio("wrong.mp3");
-        } catch (e) {}
+        } catch (e) {
+            alert("Lỗi khởi động: " + e);
+        }
     };
 
-    function loadItem(index) {
+    function loadItem(index, autoPlay = true) {
         const item = items[index];
         const learningSection = document.getElementById('learning-section');
         const gameControls = document.getElementById('game-controls');
@@ -154,18 +157,197 @@
         const iframeEl = document.getElementById('game-frame');
         const contentBox = document.getElementById('content-box');
 
-        // Reset: Hủy đọc cũ, reset giao diện
+        // Dừng âm thanh cũ
         window.speechSynthesis.cancel();
         resetState();
 
         if (item.type === 'game') {
             // --- CHẾ ĐỘ GAME ---
             document.getElementById('header-title').innerText = "🎮 " + item.title;
-            
             learningSection.style.display = 'none';
             gameControls.style.display = 'block';
             contentBox.style.height = "450px"; 
-            
             imgEl.style.display = 'none';
             iframeEl.style.display = 'block';
-            iframeEl
+            iframeEl.src = item.url;
+            document.getElementById('game-link-btn').href = item.url;
+        } else {
+            // --- CHẾ ĐỘ HỌC ---
+            document.getElementById('header-title').innerText = "🐻 Học phát âm 🐰";
+            learningSection.style.display = 'block';
+            gameControls.style.display = 'none';
+            contentBox.style.height = "250px";
+            
+            imgEl.style.display = 'block';
+            imgEl.src = item.img;
+            iframeEl.style.display = 'none';
+            iframeEl.src = ""; 
+
+            if (item.type === 'sentence') {
+                document.getElementById('single-word-area').style.display = 'none';
+                document.getElementById('sentence-area').style.display = 'flex';
+                const container = document.getElementById('sentence-area');
+                container.innerHTML = ''; 
+                // Vẽ IPA đỏ trên, chữ đen dưới theo mẫu
+                item.htmlParts.forEach(part => {
+                    const block = document.createElement('div');
+                    block.className = 'word-block';
+                    block.innerHTML = `<div class="ipa-top">${part.ipa}</div><div class="text-bottom">${part.text}</div>`;
+                    container.appendChild(block);
+                });
+            } else {
+                document.getElementById('single-word-area').style.display = 'block';
+                document.getElementById('sentence-area').style.display = 'none';
+                document.getElementById('word-text').innerText = item.word.toUpperCase();
+                document.getElementById('phonetic').innerText = item.ipa;
+            }
+
+            // CHỈ TỰ ĐỌC KHI ĐƯỢC PHÉP (autoPlay = true)
+            if(autoPlay) {
+                setTimeout(() => { playSampleSafe(); }, 500);
+            }
+        }
+    }
+
+    function nextItem() {
+        if (currentIndex < items.length - 1) { 
+            currentIndex++; 
+            loadItem(currentIndex, true); // Chuyển trang thì cho phép tự đọc
+        }
+    }
+
+    function prevItem() {
+        if (currentIndex > 0) { 
+            currentIndex--; 
+            loadItem(currentIndex, true); // Chuyển trang thì cho phép tự đọc
+        }
+    }
+
+    function resetState() {
+        document.getElementById('stars').innerText = "☆☆☆☆☆";
+        document.getElementById('mic-btn').disabled = false;
+        document.getElementById('mic-btn').className = "btn btn-mic";
+        document.getElementById('mic-btn').innerText = "🎤 Đọc Ngay";
+        clearTimeout(recognitionTimeout);
+    }
+
+    function playSampleSafe() {
+        if(items[currentIndex].type === 'game') return;
+        try {
+            window.speechSynthesis.cancel();
+            const item = items[currentIndex];
+            const textToSpeak = item.speakText || item.word;
+            const utterance = new SpeechSynthesisUtterance(textToSpeak);
+            utterance.lang = 'en-US';
+            utterance.rate = item.type === 'sentence' ? 0.7 : 0.8;
+            window.speechSynthesis.speak(utterance);
+        } catch (e) {}
+    }
+
+    function startListeningSafe() {
+        if(items[currentIndex].type === 'game') return;
+        
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) { alert("Bạn hãy dùng Chrome hoặc Safari nhé."); return; }
+
+        try {
+            window.speechSynthesis.cancel();
+            recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 10;
+            recognition.continuous = false;
+
+            document.getElementById('mic-btn').innerText = "👂 Đang nghe...";
+            document.getElementById('mic-btn').className = "btn btn-mic listening";
+            document.getElementById('mic-btn').disabled = true;
+            document.getElementById('feedback').innerText = "Bạn đọc to lên nhé...";
+
+            recognition.start();
+
+            const waitTime = items[currentIndex].type === 'sentence' ? 10000 : 8000;
+            clearTimeout(recognitionTimeout);
+            recognitionTimeout = setTimeout(() => {
+                try { recognition.stop(); } catch(e){}
+                document.getElementById('feedback').innerText = "Hết giờ! Bạn thử lại nhé.";
+                resetBtn();
+            }, waitTime); 
+
+            recognition.onresult = function(event) {
+                clearTimeout(recognitionTimeout);
+                let heardWords = [];
+                for(let i = 0; i < event.results[0].length; i++) {
+                    heardWords.push(event.results[0][i].transcript.toLowerCase());
+                }
+                checkResultSmart(heardWords);
+            };
+
+            recognition.onerror = function(event) {
+                clearTimeout(recognitionTimeout);
+                if (event.error === 'no-speech') document.getElementById('feedback').innerText = "Để mic gần hơn chút nhé!";
+                else document.getElementById('feedback').innerText = "Thử lại nào!";
+                resetBtn();
+            };
+            recognition.onend = function() {
+                if(document.getElementById('mic-btn').disabled && document.getElementById('stars').innerText === "☆☆☆☆☆") resetBtn();
+            };
+        } catch (e) { resetBtn(); }
+    }
+
+    function checkResultSmart(heardWords) {
+        const currentData = items[currentIndex];
+        const targetText = currentData.word.toLowerCase();
+        const cleanTarget = targetText.replace(/[.,]/g, "");
+        const validList = currentData.similar || [];
+        
+        let isPerfect = heardWords.some(w => {
+            const cleanHeard = w.replace(/[.,]/g, "");
+            return cleanHeard.includes(cleanTarget) || validList.includes(cleanHeard);
+        });
+
+        if (isPerfect) { showResult(5, "Tuyệt vời! Chính xác! 🎉"); return; }
+
+        let bestGuess = heardWords[0];
+        if (currentData.type === 'sentence') {
+            const targetWordsArr = cleanTarget.split(" ");
+            let matchCount = 0;
+            targetWordsArr.forEach(tw => { if (bestGuess.includes(tw)) matchCount++; });
+            if (matchCount >= targetWordsArr.length / 2) showResult(3, "Khá lắm! (" + bestGuess + ")");
+            else showResult(2, "Cố lên! Máy nghe: " + bestGuess);
+        } else {
+            if (bestGuess.charAt(0) === targetText.charAt(0)) showResult(4, "Gần đúng rồi! (" + bestGuess + ")");
+            else showResult(2, "Cố lên! Máy nghe: " + bestGuess);
+        }
+    }
+
+    function showResult(starCount, message) {
+        let stars = "";
+        for (let i = 0; i < 5; i++) { stars += (i < starCount) ? "⭐" : "☆"; }
+        document.getElementById('stars').innerText = stars;
+        document.getElementById('feedback').innerText = message;
+        playSoundSafe(starCount);
+        resetBtn();
+    }
+
+    function resetBtn() {
+        document.getElementById('mic-btn').className = "btn btn-mic";
+        document.getElementById('mic-btn').disabled = false;
+        document.getElementById('mic-btn').innerText = "🎤 Đọc Ngay";
+    }
+
+    function playSoundSafe(starCount) {
+        try {
+            if(audioWin) { audioWin.pause(); audioWin.currentTime = 0; }
+            if(audioCorrect) { audioCorrect.pause(); audioCorrect.currentTime = 0; }
+            if(audioWrong) { audioWrong.pause(); audioWrong.currentTime = 0; }
+            let soundToPlay;
+            if (starCount === 5) soundToPlay = audioWin;
+            else if (starCount >= 3) soundToPlay = audioCorrect;
+            else soundToPlay = audioWrong;
+            if(soundToPlay) soundToPlay.play().catch(e => {});
+        } catch (e) {}
+    }
+</script>
+
+</body>
+</html>
