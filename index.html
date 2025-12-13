@@ -17,7 +17,7 @@
             display: flex; flex-direction: column;
         }
 
-        /* --- 2. MENU MỞ ĐẦU --- */
+        /* --- 2. MENU MỞ ĐẦU (Z-INDEX CAO NHẤT) --- */
         #menu-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #fff; z-index: 9999;
@@ -33,9 +33,10 @@
         }
         .btn-menu:active { transform: scale(0.95); background: #f0f8ff; }
 
-        /* --- 3. KHUNG CHÍNH --- */
+        /* --- 3. KHUNG CHÍNH (CONTAINER) --- */
         #main-container {
-            display: none; width: 100%; height: 100%; position: relative;
+            display: none; /* Ẩn mặc định, chỉ hiện khi đã chọn bài */
+            width: 100%; height: 100%; position: relative;
         }
 
         /* --- 4. MÀN HÌNH HỌC TẬP --- */
@@ -46,6 +47,7 @@
             background: #fff; z-index: 10;
         }
 
+        /* Header */
         .top-bar { 
             height: 50px; display: flex; align-items: center; justify-content: space-between;
             padding: 0 5px; flex-shrink: 0;
@@ -53,6 +55,7 @@
         .btn-home { background: #eee; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 20px; cursor: pointer; }
         .header-title { color: #ff6f00; font-size: 20px; font-weight: bold; }
 
+        /* Ảnh */
         .learn-img-wrapper {
             flex: 1; width: 100%; min-height: 0;
             display: flex; align-items: center; justify-content: center;
@@ -63,15 +66,15 @@
             object-fit: contain; border-radius: 15px;
         }
 
-        /* KHU VỰC HIỂN THỊ CHỮ (QUAN TRỌNG: FLEX) */
+        /* KHU VỰC HIỂN THỊ CHỮ (QUAN TRỌNG) */
         .info-area { 
             height: 120px; flex-shrink: 0;
-            display: flex; flex-direction: row; /* Xếp ngang */
+            display: flex; flex-direction: row; 
             align-items: center; justify-content: center; 
-            gap: 5px; flex-wrap: wrap; /* Cho phép xuống dòng nếu câu dài */
+            gap: 5px; flex-wrap: wrap;
         }
 
-        /* Khối từng âm tiết (Cặp IPA - Chữ) */
+        /* Khối từng âm tiết: IPA trên, Chữ dưới */
         .char-block {
             display: flex; flex-direction: column; 
             align-items: center; justify-content: flex-end;
@@ -85,11 +88,13 @@
             font-size: 40px; color: #333; font-weight: bold; 
             height: 50px; line-height: 50px;
         }
-        /* Style riêng cho câu (nhỏ hơn chút) */
+        
+        /* Style riêng cho câu (nhỏ hơn) */
         .sent-ipa { font-size: 16px; color: red; font-weight: bold; height: 20px; }
         .sent-text { font-size: 24px; color: #333; font-weight: bold; height: 30px; }
-        .spacer { width: 10px; } /* Khoảng cách giữa các từ trong câu */
+        .spacer { width: 15px; } 
 
+        /* Sao & Feedback */
         .stars { 
             height: 35px; text-align: center; font-size: 32px; color: #e0e0e0; flex-shrink: 0;
         }
@@ -98,6 +103,7 @@
             height: 25px; text-align: center; font-size: 16px; color: #555; font-style: italic; margin-bottom: 5px;
         }
 
+        /* Nút hành động */
         .action-row {
             height: 60px; flex-shrink: 0;
             display: flex; justify-content: center; gap: 15px; align-items: center;
@@ -114,6 +120,7 @@
         .btn-game-entry { background: #9b59b6; width: 80%; max-width: none; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.05);} 100% {transform: scale(1);} }
 
+        /* Điều hướng */
         .nav-row {
             height: 60px; flex-shrink: 0;
             display: flex; justify-content: space-between; align-items: center;
@@ -159,6 +166,7 @@
             gap: 10px; margin-bottom: 5px;
         }
 
+        /* Thẻ bài */
         .card-flip {
             height: 95%; aspect-ratio: 0.75;
             position: relative; perspective: 1000px;
@@ -166,14 +174,14 @@
         .card-inner {
             position: relative; width: 100%; height: 100%;
             transition: transform 0.4s; transform-style: preserve-3d;
-            border-radius: 10px; box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+            border-radius: 12px; box-shadow: 0 3px 6px rgba(0,0,0,0.3);
         }
         .card-flip.flipped .card-inner { transform: rotateY(180deg); }
         .card-flip.matched .card-inner { opacity: 0; pointer-events: none; }
 
         .face {
             position: absolute; width: 100%; height: 100%;
-            backface-visibility: hidden; border-radius: 10px;
+            backface-visibility: hidden; border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
             border: 2px solid #5d4037;
         }
@@ -181,7 +189,6 @@
         .back { background: white; transform: rotateY(180deg); padding: 2px; }
         .back img { width: 95%; height: 95%; object-fit: contain; }
         
-        /* Chữ trong thẻ game */
         .game-card-text {
             display: flex; flex-direction: row; align-items: center; justify-content: center; 
             height: 100%; width: 100%; flex-wrap: wrap;
@@ -267,133 +274,53 @@
     const audioCorrect = new Audio("correct.mp3");
     const audioWrong = new Audio("wrong.mp3");
 
-    // --- DỮ LIỆU ĐÃ CẬP NHẬT PHIÊN ÂM CHI TIẾT ---
-    // Cấu trúc parts: { i: 'ipa', t: 'text' }. Nếu không có IPA (âm câm/giống) thì để chuỗi rỗng ""
+    // --- DỮ LIỆU ĐƯỢC CHUẨN HÓA LẠI (QUAN TRỌNG) ---
+    // i: Phiên âm (để trống nếu không cần hiện), t: Chữ cái
     
+    // BÀI 15
     const lesson15 = [
-        // Âm /ɪr/
-        { 
-            img: "beer.png", speak: "beer", similar: ["bear"],
-            parts: [{i:"ɪr", t:"beer"}] 
-        },
-        { 
-            img: "deer.png", speak: "deer", similar: ["dear"],
-            parts: [{i:"ɪr", t:"deer"}]
-        },
-        { 
-            img: "cheer.png", speak: "cheer", similar: ["chair"],
-            parts: [{i:"ɪr", t:"cheer"}]
-        },
-        { 
-            img: "tear.png", speak: "tier", similar: ["tier"],
-            parts: [{i:"ɪr", t:"tear"}]
-        },
-        { 
-            img: "ear.png", speak: "ear", similar: ["year"],
-            parts: [{i:"ɪr", t:"ear"}]
-        },
-        // Âm /ɛr/
-        { 
-            img: "bear.png", speak: "bear", similar: ["bare"],
-            parts: [{i:"ɛr", t:"bear"}]
-        },
-        { 
-            img: "pear.png", speak: "pear", similar: ["pair"],
-            parts: [{i:"ɛr", t:"pear"}]
-        },
-        { 
-            img: "share.png", speak: "share", similar: ["chair"],
-            parts: [{i:"ʃ", t:"sh"}, {i:"ɛr", t:"are"}]
-        },
-        { 
-            img: "stair.png", speak: "stair", similar: ["stare"],
-            parts: [{i:"", t:"st"}, {i:"ɛr", t:"air"}]
-        },
-        { 
-            img: "chair.png", speak: "chair", similar: ["cheer"],
-            parts: [{i:"tʃ", t:"ch"}, {i:"ɛr", t:"air"}]
-        },
-        // Câu
+        { img: "beer.png", speak: "beer", similar: ["bear"], parts: [{i:"ɪr", t:"beer"}] },
+        { img: "deer.png", speak: "deer", similar: ["dear"], parts: [{i:"ɪr", t:"deer"}] },
+        { img: "cheer.png", speak: "cheer", similar: ["chair"], parts: [{i:"tʃ", t:"ch"}, {i:"ɪr", t:"eer"}] },
+        { img: "tear.png", speak: "tier", similar: ["tier", "tea"], parts: [{i:"t", t:"t"}, {i:"ɪr", t:"ear"}] },
+        { img: "ear.png", speak: "ear", similar: ["year"], parts: [{i:"ɪr", t:"ear"}] },
+        { img: "bear.png", speak: "bear", similar: ["bare"], parts: [{i:"b", t:"b"}, {i:"ɛr", t:"ear"}] },
+        { img: "pear.png", speak: "pear", similar: ["pair"], parts: [{i:"p", t:"p"}, {i:"ɛr", t:"ear"}] },
+        { img: "share.png", speak: "share", similar: ["chair"], parts: [{i:"ʃ", t:"sh"}, {i:"ɛr", t:"are"}] },
+        { img: "stair.png", speak: "stair", similar: ["stare"], parts: [{i:"", t:"st"}, {i:"ɛr", t:"air"}] },
+        { img: "chair.png", speak: "chair", similar: ["cheer"], parts: [{i:"tʃ", t:"ch"}, {i:"ɛr", t:"air"}] },
         { 
             type: "sent", img: "sentence_deer.png", speak: "The deer is near the chair",
-            parts: [
-                {i:"ðə", t:"The"}, {i:"ɪr", t:"deer"}, {i:"ɪz", t:"is"}, 
-                {i:"ɪr", t:"near"}, {i:"ðə", t:"the"}, {i:"tʃ ɛr", t:"chair."}
-            ]
+            parts: [{i:"ðə", t:"The"}, {i:"ɪr", t:"deer"}, {i:"ɪz", t:"is"}, {i:"ɪr", t:"near"}, {i:"ðə", t:"the"}, {i:"tʃ ɛr", t:"chair."}]
         },
         { 
             type: "sent", img: "sentence_bear.png", speak: "The bear shares the pear",
-            parts: [
-                {i:"ðə", t:"The"}, {i:"ɛr", t:"bear"}, {i:"ʃ ɛr z", t:"shares"}, 
-                {i:"ðə", t:"the"}, {i:"ɛr", t:"pear."}
-            ]
+            parts: [{i:"ðə", t:"The"}, {i:"ɛr", t:"bear"}, {i:"ʃ ɛr z", t:"shares"}, {i:"ðə", t:"the"}, {i:"ɛr", t:"pear."}]
         },
-        // Game
         { type: "game", title: "Game /ɪr/", pairs: ["beer", "deer", "cheer", "tear", "ear"] },
         { type: "game", title: "Game /ɛr/", pairs: ["bear", "pear", "share", "stair", "chair"] }
     ];
 
+    // BÀI 16
     const lesson16 = [
-        // Âm /aʊ/
-        { 
-            img: "shower.png", speak: "shower", similar: ["show"],
-            parts: [{i:"ʃ", t:"sh"}, {i:"aʊ", t:"ow"}, {i:"ər", t:"er"}]
-        },
-        { 
-            img: "shout.png", speak: "shout", similar: ["out"],
-            parts: [{i:"ʃ", t:"sh"}, {i:"aʊ", t:"ou"}, {i:"", t:"t"}]
-        },
-        { 
-            img: "cow.png", speak: "cow", similar: ["how"],
-            parts: [{i:"", t:"c"}, {i:"aʊ", t:"ow"}]
-        },
-        { 
-            img: "brown.png", speak: "brown", similar: ["down"],
-            parts: [{i:"", t:"br"}, {i:"aʊ", t:"ow"}, {i:"", t:"n"}]
-        },
-        { 
-            img: "tower.png", speak: "tower", similar: ["power"],
-            parts: [{i:"", t:"t"}, {i:"aʊ", t:"ow"}, {i:"ər", t:"er"}]
-        },
-        // Âm /oʊ/
-        { 
-            img: "toe.png", speak: "toe", similar: ["tow"],
-            parts: [{i:"", t:"t"}, {i:"oʊ", t:"oe"}]
-        },
-        { 
-            img: "boat.png", speak: "boat", similar: ["boot"],
-            parts: [{i:"", t:"b"}, {i:"oʊ", t:"oa"}, {i:"", t:"t"}]
-        },
-        { 
-            img: "coat.png", speak: "coat", similar: ["cat"],
-            parts: [{i:"", t:"c"}, {i:"oʊ", t:"oa"}, {i:"", t:"t"}]
-        },
-        { 
-            img: "phone.png", speak: "phone", similar: ["fun"],
-            parts: [{i:"f", t:"ph"}, {i:"oʊ", t:"o"}, {i:"_", t:"n"}, {i:"_", t:"e"}]
-        },
-        { 
-            img: "goat.png", speak: "goat", similar: ["got"],
-            parts: [{i:"", t:"g"}, {i:"oʊ", t:"oa"}, {i:"", t:"t"}]
-        },
-        // Câu
+        { img: "shower.png", speak: "shower", similar: ["show"], parts: [{i:"ʃ", t:"sh"}, {i:"aʊ", t:"ow"}, {i:"ər", t:"er"}] },
+        { img: "shout.png", speak: "shout", similar: ["out"], parts: [{i:"ʃ", t:"sh"}, {i:"aʊ", t:"ou"}, {i:"", t:"t"}] },
+        { img: "cow.png", speak: "cow", similar: ["how"], parts: [{i:"k", t:"c"}, {i:"aʊ", t:"ow"}] },
+        { img: "brown.png", speak: "brown", similar: ["down"], parts: [{i:"", t:"br"}, {i:"aʊ", t:"ow"}, {i:"", t:"n"}] },
+        { img: "tower.png", speak: "tower", similar: ["power"], parts: [{i:"", t:"t"}, {i:"aʊ", t:"ow"}, {i:"ər", t:"er"}] },
+        { img: "toe.png", speak: "toe", similar: ["tow"], parts: [{i:"", t:"t"}, {i:"oʊ", t:"oe"}] },
+        { img: "boat.png", speak: "boat", similar: ["boot"], parts: [{i:"", t:"b"}, {i:"oʊ", t:"oa"}, {i:"", t:"t"}] },
+        { img: "coat.png", speak: "coat", similar: ["cat"], parts: [{i:"k", t:"c"}, {i:"oʊ", t:"oa"}, {i:"", t:"t"}] },
+        { img: "phone.png", speak: "phone", similar: ["fun"], parts: [{i:"f", t:"ph"}, {i:"oʊ", t:"o"}, {i:"", t:"n"}, {i:"_", t:"e"}] },
+        { img: "goat.png", speak: "goat", similar: ["got"], parts: [{i:"g", t:"g"}, {i:"oʊ", t:"oa"}, {i:"", t:"t"}] },
         { 
             type: "sent", img: "sentence_cow.png", speak: "The brown cow shouts at the mouse",
-            parts: [
-                {i:"ðə", t:"The"}, {i:"aʊ", t:"brown"}, {i:"aʊ", t:"cow"}, 
-                {i:"aʊ", t:"shouts"}, {i:"æ", t:"at"}, {i:"ðə", t:"the"}, 
-                {i:"aʊ _", t:"mouse."}
-            ]
+            parts: [{i:"ðə", t:"The"}, {i:"aʊ", t:"brown"}, {i:"aʊ", t:"cow"}, {i:"aʊ", t:"shouts"}, {i:"æ", t:"at"}, {i:"ðə", t:"the"}, {i:"aʊ _", t:"mouse."}]
         },
         { 
             type: "sent", img: "sentence_joe.png", speak: "Joe shows the slow goat the soap",
-            parts: [
-                {i:"dʒ oʊ", t:"Joe"}, {i:"ʃ oʊ z", t:"shows"}, {i:"ðə", t:"the"}, 
-                {i:"oʊ", t:"slow"}, {i:"oʊ", t:"goat"}, {i:"ðə", t:"the"}, 
-                {i:"oʊ", t:"soap."}
-            ]
+            parts: [{i:"dʒ oʊ", t:"Joe"}, {i:"ʃ oʊ z", t:"shows"}, {i:"ðə", t:"the"}, {i:"oʊ", t:"slow"}, {i:"oʊ", t:"goat"}, {i:"ðə", t:"the"}, {i:"oʊ", t:"soap."}]
         },
-        // Game
         { type: "game", title: "Game /aʊ/", pairs: ["cow", "brown", "shout", "tower", "shower"] },
         { type: "game", title: "Game /oʊ/", pairs: ["toe", "boat", "coat", "phone", "goat"] }
     ];
@@ -403,7 +330,7 @@
     let timerInt, sec=0, flipped=false, lock=false, c1, c2, match=0, lastWord="";
     let recognition;
 
-    // --- MENU LOGIC ---
+    // --- LOGIC MENU ---
     function startLesson(num) {
         currentData = (num === 15) ? lesson15 : lesson16;
         idx = 0;
@@ -418,7 +345,7 @@
         window.speechSynthesis.cancel();
     }
 
-    // --- RENDER GIAO DIỆN (Hỗ trợ cấu trúc IPA mới) ---
+    // --- RENDER GIAO DIỆN ---
     function render(i) {
         if(i < 0 || i >= currentData.length) return;
         idx = i;
@@ -428,6 +355,7 @@
         document.getElementById('learning-screen').style.display = 'flex';
         document.getElementById('win-modal').style.display = 'none';
         
+        // Reset sao và feedback
         document.getElementById('stars').innerText = "☆☆☆☆☆";
         document.getElementById('stars').classList.remove('active');
         document.getElementById('feedback').innerText = "...";
@@ -436,11 +364,14 @@
         const btnContainer = document.getElementById('action-container');
         const infoDisplay = document.getElementById('info-display');
 
+        // GAME MODE
         if(item.type === 'game') {
             imgEl.src = 'https://img.icons8.com/color/500/controller.png';
             infoDisplay.innerHTML = `<h2 class="word-display" style="font-size:30px;">${item.title}</h2>`;
             btnContainer.innerHTML = `<button class="btn-action btn-game-entry" onclick="enterGame()">🚀 Bắt Đầu Chơi</button>`;
-        } else {
+        } 
+        // LEARNING MODE
+        else {
             imgEl.src = item.img;
             btnContainer.innerHTML = `
                 <button class="btn-action btn-mic" id="mic-btn" onclick="startListening()">🎤 Đọc Ngay</button>
@@ -450,7 +381,7 @@
             // RENDER IPA + CHỮ THEO CỘT
             let html = '';
             item.parts.forEach(p => {
-                const ipaHtml = p.i ? p.i : "&nbsp;"; // Nếu ko có IPA thì để khoảng trắng để căn đều
+                const ipaHtml = p.i ? p.i : "&nbsp;"; // Ký tự khoảng trắng nếu không có IPA
                 const textClass = (item.type === 'sent') ? 'sent-text' : 'cb-text';
                 const ipaClass = (item.type === 'sent') ? 'sent-ipa' : 'cb-ipa';
                 
@@ -468,14 +399,13 @@
         }
     }
 
-    // --- CÁC HÀM XỬ LÝ KHÁC (GIỮ NGUYÊN) ---
     function nav(d) { render(idx + d); }
     function nextItem() { nav(1); }
 
     function playAudio() {
         const item = currentData[idx];
         if(item.type !== 'game') {
-            // Ghép toàn bộ text lại để đọc
+            // Ghép text lại để đọc
             const fullText = item.speak || item.parts.map(p => p.t).join("");
             speak(fullText);
         }
@@ -488,7 +418,7 @@
         window.speechSynthesis.speak(u);
     }
 
-    // --- GAME LOGIC (Cập nhật hiển thị thẻ chữ) ---
+    // --- GAME LOGIC ---
     function enterGame() {
         document.getElementById('learning-screen').style.display = 'none';
         document.getElementById('game-screen').style.display = 'flex';
@@ -509,31 +439,25 @@
 
         let cards = [];
         item.pairs.forEach(key => {
-            // Tìm data gốc để lấy IPA
-            // Vì cấu trúc data mới phức tạp, cần tìm item có parts chứa text == key
+            // Tìm item gốc trong data hiện tại để lấy ảnh và chữ
             let original = currentData.find(d => {
                 if(d.type === 'game' || d.type === 'sent') return false;
-                // Ghép text từ parts lại xem có trùng key không
+                // Ghép text để so sánh
                 let fullWord = d.parts.map(p => p.t).join("");
                 return fullWord === key;
             });
 
             if(original) {
+                // Thẻ Hình
                 cards.push({ id: key, type: 'img', content: `<img src="${original.img}">`, speak: original.speak });
                 
-                // Render thẻ chữ trong game
+                // Thẻ Chữ (Render IPA trên dưới)
                 let htmlText = `<div class="game-card-text">`;
                 original.parts.forEach(p => {
                     let ipa = p.i ? p.i : "&nbsp;";
-                    htmlText += `
-                        <div class="gc-block">
-                            <div class="gc-ipa">${ipa}</div>
-                            <div class="gc-word">${p.t}</div>
-                        </div>
-                    `;
+                    htmlText += `<div class="gc-block"><div class="gc-ipa">${ipa}</div><div class="gc-word">${p.t}</div></div>`;
                 });
                 htmlText += `</div>`;
-                
                 cards.push({ id: key, type: 'text', content: htmlText, speak: original.speak });
             }
         });
@@ -615,7 +539,7 @@
         nav(-1); 
     }
 
-    // --- MIC THẬT ---
+    // --- MIC THẬT (WEB SPEECH) ---
     function startListening() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) return alert("Trình duyệt không hỗ trợ");
@@ -652,7 +576,6 @@
             stars = 5;
         }
         
-        // Show result
         let s = ""; for(let i=0;i<5;i++) s+=(i<stars)?"⭐":"☆";
         document.getElementById('stars').innerText = s;
         if(stars===5) {
