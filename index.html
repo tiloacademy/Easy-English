@@ -24,13 +24,14 @@
             display: flex; flex-direction: column; 
             align-items: center; justify-content: center; gap: 20px;
         }
-        .menu-title { font-size: 28px; color: #ff6f00; font-weight: bold; margin-bottom: 20px; }
+        .menu-title { font-size: 28px; color: #ff6f00; font-weight: bold; margin-bottom: 30px; }
         .btn-menu {
             background: white; border: 2px solid #00A4EF; color: #00A4EF;
             padding: 15px 40px; border-radius: 50px; font-size: 20px; font-weight: bold;
-            box-shadow: 0 4px #ccebfd; cursor: pointer; width: 80%;
+            box-shadow: 0 4px #ccebfd; cursor: pointer; width: 85%; max-width: 350px;
+            transition: all 0.2s;
         }
-        .btn-menu:active { transform: scale(0.98); box-shadow: none; }
+        .btn-menu:active { transform: scale(0.95); background: #e1f5fe; }
 
         /* --- 2. GIAO DIỆN HỌC (LEARNING) --- */
         #learning-screen {
@@ -58,12 +59,12 @@
         }
 
         .info-area { 
-            height: 90px; flex-shrink: 0;
+            height: 100px; flex-shrink: 0;
             display: flex; flex-direction: column; 
             align-items: center; justify-content: center; 
         }
-        .phonetic { font-size: 22px; color: red; font-weight: bold; font-family: sans-serif; line-height: 1.2; margin-bottom: 5px; }
-        .word-display { font-size: 36px; font-weight: bold; color: #333; margin: 0; line-height: 1.2; }
+        .phonetic { font-size: 24px; color: red; font-weight: bold; font-family: sans-serif; line-height: 1.2; margin-bottom: 5px; }
+        .word-display { font-size: 38px; font-weight: bold; color: #333; margin: 0; line-height: 1.2; }
 
         .sentence-box { display: none; flex-wrap: wrap; justify-content: center; gap: 8px; }
         .s-chunk { text-align: center; }
@@ -71,7 +72,7 @@
         .s-txt { font-size: 18px; color: #333; font-weight: bold; }
 
         .stars { 
-            height: 30px; text-align: center; font-size: 28px; color: #e0e0e0; flex-shrink: 0; margin-bottom: 5px;
+            height: 35px; text-align: center; font-size: 30px; color: #e0e0e0; flex-shrink: 0; margin-bottom: 5px;
         }
         .stars.active { color: #FFD700; text-shadow: 0 0 5px orange; transition: color 0.3s; }
         .feedback-text {
@@ -242,8 +243,12 @@
 </div>
 
 <script>
-    // --- DỮ LIỆU BÀI HỌC (ĐÃ BỔ SUNG DANH SÁCH SIMILAR) ---
-    
+    // --- ÂM THANH (Sử dụng File Local) ---
+    const audioWin = new Audio("win.mp3");       // Khi được 5 sao / Thắng game
+    const audioCorrect = new Audio("correct.mp3"); // Khi được 3-4 sao / Lật đúng cặp
+    const audioWrong = new Audio("wrong.mp3");     // Khi được 1-2 sao / Lật sai
+
+    // --- DỮ LIỆU BÀI HỌC ---
     // Bài 15
     const lesson15 = [
         { word: "beer", ipa: "/ɪr/", img: "beer.png", type: "word", speakText: "beer", similar: ["bear", "beard", "pier", "beers"] }, 
@@ -262,28 +267,20 @@
         { type: "game", title: "Game /ɛr/", pairs: ["bear", "pear", "share", "stair", "chair"] }
     ];
 
-    // Bài 16 (Đã thêm similar cho âm /aʊ/ và /oʊ/)
+    // Bài 16
     const lesson16 = [
-        // Âm /aʊ/
         { word: "shower", ipa: "/aʊ ər/", img: "shower.png", type: "word", speakText: "shower", similar: ["show", "power", "hour", "sower"] },
         { word: "shout", ipa: "/aʊ/", img: "shout.png", type: "word", speakText: "shout", similar: ["out", "shut", "south", "scout"] },
         { word: "cow", ipa: "/aʊ/", img: "cow.png", type: "word", speakText: "cow", similar: ["how", "now", "count", "call"] },
         { word: "brown", ipa: "/aʊ/", img: "brown.png", type: "word", speakText: "brown", similar: ["down", "frown", "round", "ground"] },
         { word: "tower", ipa: "/aʊ ər/", img: "tower.png", type: "word", speakText: "tower", similar: ["power", "towel", "flower"] },
-        // Âm /oʊ/
         { word: "toe", ipa: "/oʊ/", img: "toe.png", type: "word", speakText: "toe", similar: ["tow", "to", "tall"] },
         { word: "boat", ipa: "/oʊ/", img: "boat.png", type: "word", speakText: "boat", similar: ["boot", "bot", "bought", "bow"] },
         { word: "coat", ipa: "/oʊ/", img: "coat.png", type: "word", speakText: "coat", similar: ["cat", "cot", "code", "cold"] },
         { word: "phone", ipa: "/f oʊ/", img: "phone.png", type: "word", speakText: "phone", similar: ["fun", "foam", "home", "fone"] },
         { word: "goat", ipa: "/oʊ/", img: "goat.png", type: "word", speakText: "goat", similar: ["got", "go", "good", "ghost"] },
-        // Câu
-        { type: "sent", text: "The brown cow shouts at the mouse", img: "sentence_cow.png", 
-          parts: [{t:"The",p:"ðə"},{t:"brown",p:"aʊ"},{t:"cow",p:"aʊ"},{t:"shouts",p:"aʊ"},{t:"at",p:"æ"},{t:"the",p:"ðə"},{t:"mouse.",p:"aʊ"}] 
-        },
-        { type: "sent", text: "Joe shows the slow goat the soap", img: "sentence_joe.png", 
-          parts: [{t:"Joe",p:"dʒ oʊ"},{t:"shows",p:"ʃ oʊ z"},{t:"the",p:"ðə"},{t:"slow",p:"oʊ"},{t:"goat",p:"oʊ"},{t:"the",p:"ðə"},{t:"soap.",p:"oʊ"}] 
-        },
-        // Game
+        { type: "sent", text: "The brown cow shouts at the mouse", img: "sentence_cow.png", parts: [{t:"The",p:"ðə"},{t:"brown",p:"aʊ"},{t:"cow",p:"aʊ"},{t:"shouts",p:"aʊ"},{t:"at",p:"æ"},{t:"the",p:"ðə"},{t:"mouse.",p:"aʊ"}] },
+        { type: "sent", text: "Joe shows the slow goat the soap", img: "sentence_joe.png", parts: [{t:"Joe",p:"dʒ oʊ"},{t:"shows",p:"ʃ oʊ z"},{t:"the",p:"ðə"},{t:"slow",p:"oʊ"},{t:"goat",p:"oʊ"},{t:"the",p:"ðə"},{t:"soap.",p:"oʊ"}] },
         { type: "game", title: "Game /aʊ/", pairs: ["cow", "brown", "shout", "tower", "shower"] },
         { type: "game", title: "Game /oʊ/", pairs: ["toe", "boat", "coat", "phone", "goat"] }
     ];
@@ -298,7 +295,7 @@
         currentData = (num === 15) ? lesson15 : lesson16;
         idx = 0;
         document.getElementById('menu-screen').style.display = 'none';
-        document.getElementById('learning-screen').style.display = 'flex';
+        document.getElementById('main-card').style.display = 'flex';
         render(0);
     }
 
@@ -309,16 +306,14 @@
         window.speechSynthesis.cancel();
     }
 
-    // --- LOGIC THU ÂM THẬT (WEB SPEECH API) ---
+    // --- LOGIC THU ÂM (WEB SPEECH) ---
     function startListening() {
-        // 1. Kiểm tra hỗ trợ
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
-            alert("Trình duyệt của bạn không hỗ trợ thu âm. Vui lòng dùng Google Chrome hoặc Safari.");
+            alert("Trình duyệt không hỗ trợ. Hãy dùng Chrome trên Android hoặc Safari trên iOS.");
             return;
         }
 
-        // 2. Setup UI
         const btn = document.getElementById('mic-btn');
         const feedback = document.getElementById('feedback');
         const stars = document.getElementById('stars');
@@ -330,15 +325,13 @@
         stars.innerText = "☆☆☆☆☆";
         stars.classList.remove('active');
 
-        // 3. Cấu hình Recognition
         recognition = new SpeechRecognition();
         recognition.lang = 'en-US';
         recognition.interimResults = false;
-        recognition.maxAlternatives = 10; // Lấy nhiều kết quả để tăng khả năng đúng
+        recognition.maxAlternatives = 10;
 
         recognition.start();
 
-        // Xử lý kết quả
         recognition.onresult = function(event) {
             const results = event.results[0];
             const heardWords = [];
@@ -348,8 +341,8 @@
             checkResultSmart(heardWords);
         };
 
-        recognition.onerror = function(event) {
-            feedback.innerText = "Không nghe rõ, thử lại nhé!";
+        recognition.onerror = function() {
+            feedback.innerText = "Chưa nghe rõ, thử lại nhé!";
             resetMicBtn();
         };
 
@@ -365,46 +358,44 @@
         btn.style.backgroundColor = "#27ae60";
     }
 
-    // --- LOGIC KIỂM TRA KẾT QUẢ (FUZZY MATCHING) ---
     function checkResultSmart(heardWords) {
         const item = currentData[idx];
         const targetText = (item.speakText || item.word || item.text).toLowerCase();
         
-        // Tạo danh sách các từ chấp nhận được
         let acceptedWords = [targetText.replace(/[.,!?]/g, "")];
         
-        // Nếu là từ đơn, thêm danh sách similar
         if (item.type !== 'sent' && item.similar) {
             item.similar.forEach(w => acceptedWords.push(w.toLowerCase()));
         }
 
-        // 1. Kiểm tra khớp chính xác hoặc khớp từ tương tự (cho từ đơn)
-        let isMatch = false;
+        // Logic chấm điểm
+        let starCount = 2; // Mặc định thấp
+        
         if (item.type !== 'sent') {
-            isMatch = heardWords.some(heard => {
+            // TỪ ĐƠN: Đúng hẳn hoặc giống -> 5 sao
+            let isMatch = heardWords.some(heard => {
                 const cleanHeard = heard.replace(/[.,!?]/g, "");
                 return acceptedWords.some(acc => cleanHeard.includes(acc) || acc === cleanHeard);
             });
-        } 
-        // 2. Kiểm tra câu (Độ khó thấp: Nghe được > 50% từ khoá là đạt)
-        else {
+            if (isMatch) starCount = 5;
+        } else {
+            // CÂU: Kiểm tra mức độ đúng
             const targetKeywords = targetText.split(" ");
-            // Lấy kết quả nghe tốt nhất (kết quả đầu tiên thường chuẩn nhất)
             const bestGuess = heardWords[0]; 
             let matchCount = 0;
             targetKeywords.forEach(kw => {
                 if (bestGuess.includes(kw.replace(/[.,!?]/g, ""))) matchCount++;
             });
             
-            // Nếu đúng trên 60% số từ -> OK
-            if (matchCount >= targetKeywords.length * 0.6) isMatch = true;
+            let accuracy = matchCount / targetKeywords.length;
+            if (accuracy >= 0.8) starCount = 5;      // Đúng > 80% -> 5 sao
+            else if (accuracy >= 0.5) starCount = 3; // Đúng > 50% -> 3 sao
+            else starCount = 1;                      // Còn lại 1 sao
         }
 
-        if (isMatch) {
-            showResult(5, "Tuyệt vời! Chính xác!");
-        } else {
-            showResult(2, "Cố lên, thử lại nào!");
-        }
+        if (starCount === 5) showResult(5, "Tuyệt vời! Chính xác!");
+        else if (starCount === 3) showResult(3, "Khá tốt, cố lên chút nữa!");
+        else showResult(1, "Thử lại lần nữa nhé!");
     }
 
     function showResult(starCount, msg) {
@@ -419,7 +410,16 @@
         
         feedback.innerText = msg;
         
-        if (starCount === 5) speak("Excellent!");
+        // --- PHÁT ÂM THANH THEO SAO ---
+        if (starCount === 5) {
+            audioWin.play(); 
+            setTimeout(() => speak("Excellent!"), 1500);
+        } else if (starCount >= 3) {
+            audioCorrect.play();
+        } else {
+            audioWrong.play();
+        }
+        
         resetMicBtn();
     }
 
@@ -429,7 +429,6 @@
         idx = i;
         const item = currentData[i];
 
-        // Reset UI
         document.getElementById('game-screen').style.display = 'none';
         document.getElementById('learning-screen').style.display = 'flex';
         document.getElementById('win-modal').style.display = 'none';
@@ -475,9 +474,13 @@
 
     function nav(d) { render(idx + d); }
     
+    // --- SỬA LỖI NÚT NGHE LẠI ---
     function playAudio() {
         const item = currentData[idx];
-        if(item.type !== 'game') speak(item.speakText || item.word || item.text);
+        if(item.type !== 'game') {
+            const textToRead = item.speakText || item.word || item.text;
+            speak(textToRead);
+        }
     }
 
     function speak(txt) {
@@ -553,12 +556,15 @@
         if(c1.dataset.id === c2.dataset.id) {
             setTimeout(() => {
                 c1.classList.add('matched'); c2.classList.add('matched');
-                match++; reset();
+                match++; 
+                audioCorrect.play(); // Lật đúng -> ting ting
+                reset();
                 if(match===5) win();
             }, 600);
         } else {
             setTimeout(() => {
                 c1.classList.remove('flipped'); c2.classList.remove('flipped');
+                audioWrong.play(); // Lật sai -> buzz
                 reset();
             }, 1000);
         }
@@ -580,6 +586,7 @@
         let timeStr = document.getElementById('timer').innerText;
         document.getElementById('win-msg').innerText = "Bạn đã hoàn thành trò chơi trong " + timeStr;
         document.getElementById('win-modal').style.display = 'flex';
+        audioWin.play(); // Thắng game -> vỗ tay
         speak("Excellent job!");
     }
 
