@@ -17,27 +17,33 @@
             display: flex; flex-direction: column;
         }
 
-        /* --- 2. MENU SCREEN --- */
+        /* --- 2. MENU MỞ ĐẦU (Z-INDEX CAO NHẤT) --- */
         #menu-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #fff; z-index: 200;
+            background: #fff; z-index: 9999; /* Luôn nổi lên trên cùng */
             display: flex; flex-direction: column; 
-            align-items: center; justify-content: center; gap: 20px;
+            align-items: center; justify-content: center; gap: 25px;
         }
         .menu-title { font-size: 32px; color: #ff6f00; font-weight: bold; margin-bottom: 20px; }
         .btn-menu {
             background: white; border: 3px solid #00A4EF; color: #00A4EF;
             padding: 15px 40px; border-radius: 50px; font-size: 22px; font-weight: bold;
             box-shadow: 0 5px #ccebfd; cursor: pointer; width: 85%; max-width: 350px;
-            transition: transform 0.1s;
+            transition: transform 0.1s; margin-bottom: 10px;
         }
         .btn-menu:active { transform: scale(0.95); background: #f0f8ff; }
 
-        /* --- 3. MÀN HÌNH HỌC TẬP --- */
+        /* --- 3. KHUNG CHÍNH (CONTAINER) --- */
+        /* Mặc định ẩn, chỉ hiện khi chọn bài */
+        #main-container {
+            display: none; 
+            width: 100%; height: 100%; position: relative;
+        }
+
+        /* --- 4. MÀN HÌNH HỌC TẬP --- */
         #learning-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: none; /* Ẩn mặc định */
-            flex-direction: column;
+            display: flex; flex-direction: column;
             padding: 10px; background: #fff; z-index: 10;
         }
 
@@ -62,7 +68,7 @@
 
         /* Thông tin chữ */
         .info-area { 
-            height: 100px; flex-shrink: 0;
+            height: 110px; flex-shrink: 0;
             display: flex; flex-direction: column; 
             align-items: center; justify-content: center; 
         }
@@ -116,10 +122,10 @@
         }
         .btn-nav:active { transform: translateY(2px); box-shadow: none; }
 
-        /* --- 4. GIAO DIỆN GAME --- */
+        /* --- 5. GIAO DIỆN GAME --- */
         #game-screen {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #fff3e0; z-index: 50;
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff3e0; z-index: 20;
             flex-direction: column;
         }
 
@@ -198,59 +204,63 @@
     <button class="btn-menu" onclick="startLesson(16)">Bài 16: /aʊ/ & /oʊ/</button>
 </div>
 
-<div id="learning-screen">
-    <div class="top-bar">
-        <button class="btn-home" onclick="goHome()">🏠</button>
-        <div class="header-title">🐻 Bé Học Tiếng Anh 🐰</div>
-        <div style="width: 40px;"></div>
-    </div>
+<div id="main-container">
     
-    <div class="learn-img-wrapper">
-        <img id="learn-img" src="" alt="Hình ảnh">
-    </div>
-
-    <div class="info-area">
-        <div id="mode-word">
-            <div class="phonetic" id="disp-ipa">...</div>
-            <h2 class="word-display" id="disp-text">...</h2>
+    <div id="learning-screen">
+        <div class="top-bar">
+            <button class="btn-home" onclick="goHome()">🏠</button>
+            <div class="header-title">🐻 Bé Học Tiếng Anh 🐰</div>
+            <div style="width: 40px;"></div>
         </div>
-        <div id="mode-sent" class="sentence-box"></div>
+        
+        <div class="learn-img-wrapper">
+            <img id="learn-img" src="" alt="Hình ảnh">
+        </div>
+
+        <div class="info-area">
+            <div id="mode-word">
+                <div class="phonetic" id="disp-ipa">...</div>
+                <h2 class="word-display" id="disp-text">...</h2>
+            </div>
+            <div id="mode-sent" class="sentence-box"></div>
+        </div>
+
+        <div class="stars" id="stars">☆☆☆☆☆</div>
+        <div class="feedback-text" id="feedback">...</div>
+
+        <div class="action-row" id="action-container">
+            <button class="btn-action btn-mic" id="mic-btn" onclick="startListening()">🎤 Đọc Ngay</button>
+            <button class="btn-action btn-listen" id="btn-replay" onclick="playAudio()">🔊 Nghe Lại</button>
+        </div>
+
+        <div class="nav-row">
+            <button class="btn-nav" onclick="nav(-1)">◀</button>
+            <button class="btn-nav" onclick="nav(1)">▶</button>
+        </div>
     </div>
 
-    <div class="stars" id="stars">☆☆☆☆☆</div>
-    <div class="feedback-text" id="feedback">...</div>
+    <div id="game-screen">
+        <div class="game-header">
+            <div class="timer-badge">⏱️ <span id="timer">00:00</span></div>
+            <button class="btn-close" onclick="exitGame()">✕</button>
+        </div>
 
-    <div class="action-row" id="action-container">
-        <button class="btn-action btn-mic" id="mic-btn" onclick="startListening()">🎤 Đọc Ngay</button>
-        <button class="btn-action btn-listen" id="btn-replay" onclick="playAudio()">🔊 Nghe Lại</button>
+        <div id="tower" class="tower-container"></div>
+
+        <div class="game-footer">
+            <button class="btn-action btn-listen" style="width: 40%;" onclick="playLastCard()">🔊 Nghe</button>
+            <button class="btn-action btn-nav" style="width: 40%; border-radius: 25px; font-size: 18px;" onclick="initGame()">↻ Chơi lại</button>
+        </div>
+
+        <div id="win-modal">
+            <h1 style="color:green; font-size:36px; margin-bottom: 10px;">XUẤT SẮC! 🎉</h1>
+            <p id="win-msg" style="font-size:20px; color:#555; margin-bottom: 30px;">Bạn đã hoàn thành trò chơi trong 00:00</p>
+            <button class="btn-action btn-nav" style="width:auto; padding: 0 40px;" onclick="initGame()">Chơi lại</button>
+            <br><br>
+            <button class="btn-action btn-listen" style="width:auto; padding: 0 40px;" onclick="nextItem()">Bài Tiếp ➡</button>
+        </div>
     </div>
 
-    <div class="nav-row">
-        <button class="btn-nav" onclick="nav(-1)">◀</button>
-        <button class="btn-nav" onclick="nav(1)">▶</button>
-    </div>
-</div>
-
-<div id="game-screen">
-    <div class="game-header">
-        <div class="timer-badge">⏱️ <span id="timer">00:00</span></div>
-        <button class="btn-close" onclick="exitGame()">✕</button>
-    </div>
-
-    <div id="tower" class="tower-container"></div>
-
-    <div class="game-footer">
-        <button class="btn-action btn-listen" style="width: 40%;" onclick="playLastCard()">🔊 Nghe</button>
-        <button class="btn-action btn-nav" style="width: 40%; border-radius: 25px; font-size: 18px;" onclick="initGame()">↻ Chơi lại</button>
-    </div>
-
-    <div id="win-modal">
-        <h1 style="color:green; font-size:36px; margin-bottom: 10px;">XUẤT SẮC! 🎉</h1>
-        <p id="win-msg" style="font-size:20px; color:#555; margin-bottom: 30px;">Bạn đã hoàn thành trò chơi trong 00:00</p>
-        <button class="btn-action btn-nav" style="width:auto; padding: 0 40px;" onclick="initGame()">Chơi lại</button>
-        <br><br>
-        <button class="btn-action btn-listen" style="width:auto; padding: 0 40px;" onclick="nextItem()">Bài Tiếp ➡</button>
-    </div>
 </div>
 
 <script>
@@ -261,7 +271,6 @@
     const audioWrong = new Audio("wrong.mp3");
 
     // --- DỮ LIỆU BÀI HỌC ---
-    // Bài 15
     const lesson15 = [
         { word: "beer", ipa: "/ɪr/", img: "beer.png", type: "word", speakText: "beer", similar: ["bear", "beard", "pier", "beers"] }, 
         { word: "deer", ipa: "/ɪr/", img: "deer.png", type: "word", speakText: "deer", similar: ["dear", "dare", "tear", "there"] }, 
@@ -279,7 +288,6 @@
         { type: "game", title: "Game /ɛr/", pairs: ["bear", "pear", "share", "stair", "chair"] }
     ];
 
-    // Bài 16
     const lesson16 = [
         { word: "shower", ipa: "/aʊ ər/", img: "shower.png", type: "word", speakText: "shower", similar: ["show", "power", "hour", "sower"] },
         { word: "shout", ipa: "/aʊ/", img: "shout.png", type: "word", speakText: "shout", similar: ["out", "shut", "south", "scout"] },
@@ -302,23 +310,27 @@
     let timerInt, sec=0, flipped=false, lock=false, c1, c2, match=0, lastWord="";
     let recognition;
 
-    // --- MENU ---
+    // --- LOGIC MENU ---
     function startLesson(num) {
+        // 1. Chọn bài
         currentData = (num === 15) ? lesson15 : lesson16;
         idx = 0;
+        
+        // 2. Chuyển màn hình
         document.getElementById('menu-screen').style.display = 'none';
-        document.getElementById('learning-screen').style.display = 'flex';
+        document.getElementById('main-container').style.display = 'block';
+        
+        // 3. Tải nội dung
         render(0);
     }
 
     function goHome() {
-        document.getElementById('learning-screen').style.display = 'none';
-        document.getElementById('game-screen').style.display = 'none';
+        document.getElementById('main-container').style.display = 'none';
         document.getElementById('menu-screen').style.display = 'flex';
         window.speechSynthesis.cancel();
     }
 
-    // --- LOGIC THU ÂM & CHẤM ĐIỂM ---
+    // --- LOGIC THU ÂM ---
     function startListening() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
@@ -375,29 +387,26 @@
         const targetText = (item.speakText || item.word || item.text).toLowerCase();
         let accepted = [targetText.replace(/[.,!?]/g, "")];
         
-        // Thêm các từ similar vào danh sách chấp nhận
         if (item.type !== 'sent' && item.similar) {
             item.similar.forEach(w => accepted.push(w.toLowerCase()));
         }
 
+        let isMatch = false;
         let starCount = 1;
 
         if (item.type !== 'sent') {
-            // TỪ ĐƠN
-            let isMatch = heardWords.some(h => {
+            isMatch = heardWords.some(h => {
                 const clean = h.replace(/[.,!?]/g, "");
                 return accepted.some(acc => clean.includes(acc) || acc === clean);
             });
             if (isMatch) starCount = 5;
         } else {
-            // CÂU
             const targetKeywords = targetText.split(" ");
             const bestGuess = heardWords[0]; 
             let count = 0;
             targetKeywords.forEach(kw => {
                 if (bestGuess.includes(kw.replace(/[.,!?]/g, ""))) count++;
             });
-            
             let accuracy = count / targetKeywords.length;
             if (accuracy >= 0.8) starCount = 5;
             else if (accuracy >= 0.5) starCount = 3;
@@ -416,14 +425,14 @@
         stars.innerText = s;
         feedback.innerText = msg;
         
-        // --- PHÁT FILE ÂM THANH CỤC BỘ ---
         if(starCount === 5) {
             stars.classList.add('active');
-            audioWin.play().catch(e => console.log("Lỗi phát audioWin"));
+            audioWin.play().catch(e=>{});
+            setTimeout(() => speak("Excellent!"), 1500);
         } else if (starCount >= 3) {
-            audioCorrect.play().catch(e => console.log("Lỗi phát audioCorrect"));
+            audioCorrect.play().catch(e=>{});
         } else {
-            audioWrong.play().catch(e => console.log("Lỗi phát audioWrong"));
+            audioWrong.play().catch(e=>{});
         }
         
         resetMicBtn();
@@ -435,7 +444,6 @@
         idx = i;
         const item = currentData[i];
 
-        // Reset UI
         document.getElementById('game-screen').style.display = 'none';
         document.getElementById('learning-screen').style.display = 'flex';
         document.getElementById('win-modal').style.display = 'none';
@@ -457,7 +465,6 @@
             btnContainer.innerHTML = `<button class="btn-action btn-game-entry" onclick="enterGame()">🚀 Bắt Đầu Chơi</button>`;
         } else {
             imgEl.src = item.img;
-            // Khôi phục nút
             btnContainer.innerHTML = `
                 <button class="btn-action btn-mic" id="mic-btn" onclick="startListening()">🎤 Đọc Ngay</button>
                 <button class="btn-action btn-listen" id="btn-replay" onclick="playAudio()">🔊 Nghe Lại</button>
@@ -476,18 +483,134 @@
                 document.getElementById('disp-text').innerText = item.word;
                 document.getElementById('disp-ipa').innerText = item.ipa.replace(/\//g, '');
             }
-            // Tự đọc khi vào bài
             setTimeout(playAudio, 500);
         }
     }
 
     function nav(d) { render(idx + d); }
-    // Hàm này cho nút "Bài tiếp theo" trong game
     function nextItem() { nav(1); }
 
-    // --- SỬA LỖI NÚT NGHE LẠI ---
     function playAudio() {
         const item = currentData[idx];
         if(item.type !== 'game') {
-            // Ưu tiên speakText -> word -> text (câu)
-            const txt = item
+            const txt = item.speakText || item.word || item.text;
+            speak(txt);
+        }
+    }
+
+    function speak(txt) {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(txt);
+        u.lang = 'en-US';
+        window.speechSynthesis.speak(u);
+    }
+
+    // --- GAME LOGIC ---
+    function enterGame() {
+        document.getElementById('learning-screen').style.display = 'none';
+        document.getElementById('game-screen').style.display = 'flex';
+        initGame();
+    }
+
+    function initGame() {
+        const item = currentData[idx];
+        const tower = document.getElementById('tower');
+        tower.innerHTML = '';
+        document.getElementById('win-modal').style.display = 'none';
+
+        clearInterval(timerInt);
+        sec=0; document.getElementById('timer').innerText = "00:00";
+        startTimer();
+
+        flipped=false; lock=false; c1=null; c2=null; match=0; lastWord="Choose";
+
+        let cards = [];
+        item.pairs.forEach(key => {
+            let original = currentData.find(d => d.word === key);
+            if(original) {
+                cards.push({ id: key, type: 'img', content: `<img src="${original.img}">`, speak: original.speakText || key });
+                let ipaClean = original.ipa.replace(/\//g, '');
+                let htmlText = `<div class="game-card-text"><div class="gc-ipa">${ipaClean}</div><div class="gc-word">${key}</div></div>`;
+                cards.push({ id: key, type: 'text', content: htmlText, speak: original.speakText || key });
+            }
+        });
+        cards.sort(() => 0.5 - Math.random());
+
+        const rows = [3, 2, 3, 2];
+        let cCount = 0; let num = 1;
+
+        rows.forEach(cnt => {
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'tower-row';
+            for(let k=0; k<cnt; k++) {
+                const c = cards[cCount];
+                const el = document.createElement('div');
+                el.className = 'card-flip';
+                el.dataset.speak = c.speak;
+                el.dataset.id = c.id;
+                el.innerHTML = `<div class="card-inner"><div class="face front">${num}</div><div class="face back">${c.content}</div></div>`;
+                el.onclick = function() { cardClick(this); };
+                rowDiv.appendChild(el);
+                cCount++; num++;
+            }
+            tower.appendChild(rowDiv);
+        });
+    }
+
+    function cardClick(el) {
+        if(lock || el===c1 || el.classList.contains('matched')) return;
+        el.classList.add('flipped');
+        lastWord = el.dataset.speak;
+        speak(lastWord);
+        if(!flipped) { flipped=true; c1=el; } else { c2=el; check(); }
+    }
+
+    function check() {
+        lock=true;
+        if(c1.dataset.id === c2.dataset.id) {
+            setTimeout(() => {
+                c1.classList.add('matched'); c2.classList.add('matched');
+                match++; audioCorrect.play().catch(e=>{});
+                reset();
+                if(match===5) win();
+            }, 600);
+        } else {
+            setTimeout(() => {
+                c1.classList.remove('flipped'); c2.classList.remove('flipped');
+                audioWrong.play().catch(e=>{});
+                reset();
+            }, 1000);
+        }
+    }
+
+    function reset() { flipped=false; lock=false; c1=null; c2=null; }
+    
+    function startTimer() {
+        timerInt = setInterval(() => {
+            sec++;
+            let m=Math.floor(sec/60).toString().padStart(2,'0');
+            let s=(sec%60).toString().padStart(2,'0');
+            document.getElementById('timer').innerText = `${m}:${s}`;
+        }, 1000);
+    }
+
+    function win() {
+        clearInterval(timerInt);
+        let timeStr = document.getElementById('timer').innerText;
+        document.getElementById('win-msg').innerText = "Bạn đã hoàn thành trò chơi trong " + timeStr;
+        document.getElementById('win-modal').style.display = 'flex';
+        audioWin.play().catch(e=>{});
+        speak("Excellent job!");
+    }
+
+    function playLastCard() { speak(lastWord); }
+    
+    function exitGame() { 
+        clearInterval(timerInt); 
+        document.getElementById('game-screen').style.display = 'none';
+        document.getElementById('learning-screen').style.display = 'flex';
+        nav(-1); 
+    }
+</script>
+</body>
+</html>
