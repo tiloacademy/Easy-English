@@ -3,23 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Bé Học Tiếng Anh - Whack a Mole 3D</title>
+<title>Bé Học Tiếng Anh</title>
 <style>
 /* --- 1. CẤU HÌNH CỐ ĐỊNH --- */
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #87CEEB; /* Nền trời xanh */
+    background-color: #87CEEB;
     margin: 0; padding: 0;
     height: 100vh; width: 100vw; overflow: hidden;
     display: flex; flex-direction: column;
+    user-select: none;
 }
 
-/* --- 2. MENU (Hiện ngay lập tức) --- */
+/* --- 2. MENU CHÍNH --- */
 #menu-screen {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: #fff; z-index: 9999;
-    display: flex; /* Hiện luôn */
+    display: flex;
     flex-direction: column; align-items: center; justify-content: center; gap: 15px;
 }
 .menu-title { font-size: 32px; color: #ff6f00; font-weight: bold; margin-bottom: 20px; }
@@ -84,8 +85,8 @@ body {
     width: 45px; height: 45px; border-radius: 50%; border: none; font-weight: bold; font-size: 20px;
 }
 .game-footer {
-    height: 100px; display: flex; justify-content: center; align-items: center;
-    background: white; border-top: 1px solid #ccc; padding-bottom: 20px;
+    height: 120px; display: flex; justify-content: center; align-items: center;
+    background: white; border-top: 1px solid #ccc; padding-bottom: 50px;
 }
 #win-modal {
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -119,76 +120,103 @@ body {
 .gc-ipa { color: red; font-weight: bold; font-size: 1.8vh; height: 2vh; }
 .gc-word { color: #333; font-weight: bold; font-size: 2.5vh; }
 
-/* --- GAME 2: WHACK-A-MOLE PRO 3D --- */
+/* --- GAME 2: WHACK-A-MOLE 3D FARM --- */
 #whack-wrapper {
     flex: 1; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
     overflow: hidden;
-    /* Nền trời và cỏ */
-    background: linear-gradient(to bottom, #87CEEB 0%, #87CEEB 30%, #76c7c0 30%, #4caf50 30%, #4caf50 100%);
+    background: linear-gradient(to bottom, #87CEEB 0%, #87CEEB 40%, #8bc34a 40%, #8bc34a 100%);
+    position: relative;
+    padding-bottom: 20px;
 }
+#whack-wrapper::before { content: '☁️'; font-size: 60px; position: absolute; top: 30px; left: 20px; opacity: 0.8; }
+#whack-wrapper::after { content: '☁️'; font-size: 50px; position: absolute; top: 60px; right: 40px; opacity: 0.8; }
 
 .wood-sign {
-    background: #8d6e63; border: 4px solid #5d4037; color: white;
-    padding: 10px 20px; border-radius: 10px; font-weight: bold;
-    box-shadow: 0 5px 0 rgba(0,0,0,0.3); text-align: center;
-    min-width: 150px;
+    background: #8d6e63;
+    background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.05) 10px, rgba(0,0,0,0.05) 20px);
+    border: 4px solid #5d4037; color: white;
+    padding: 5px 15px; border-radius: 10px; font-weight: bold;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.4); text-align: center;
+    min-width: 130px; text-shadow: 1px 1px 0px rgba(0,0,0,0.5);
+    z-index: 10;
 }
 
-.hud-row {
-    display: flex; gap: 15px; margin-bottom: 15px; margin-top: 10px; z-index: 5;
-}
+.hud-row { display: flex; gap: 10px; margin-bottom: 10px; margin-top: 5px; z-index: 5; justify-content: center; width: 100%; }
 
-.target-word { font-size: 24px; color: #ffeb3b; text-transform: uppercase; }
-.score-text { font-size: 24px; color: #fff; }
+#target-word-container {
+    display: flex; flex-direction: row; justify-content: center; align-items: flex-end;
+    background: white; padding: 5px 15px; border-radius: 8px;
+    border: 2px solid #5d4037;
+    margin-top: 5px; min-height: 45px;
+}
+.target-char { display: flex; flex-direction: column; align-items: center; margin: 0 1px; }
+.target-ipa { color: red; font-weight: bold; font-size: 14px; height: 16px; }
+.target-txt { color: #333; font-weight: bold; font-size: 24px; }
+
+.score-text { font-size: 24px; color: #fff; font-weight: 900; }
 
 .game-field-3d {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
     width: 90%; max-width: 400px;
-    /* 3D Effect */
     transform: perspective(800px) rotateX(25deg);
     padding: 20px;
-    background: #795548; /* Đất */
-    border-radius: 15px; border: 5px solid #5d4037;
-    box-shadow: 0 15px 0 #3e2723, 0 20px 20px rgba(0,0,0,0.5);
+    background-color: #6d4c41; 
+    background-image: radial-gradient(circle, #795548 10%, transparent 10%);
+    background-size: 20px 20px;
+    border-radius: 20px;
+    border: 8px solid #388e3c;
+    box-shadow: 0 20px 0 #2e7d32, 0 25px 25px rgba(0,0,0,0.6);
 }
 
 .hole {
     position: relative; aspect-ratio: 1;
-    background: #3e2723; /* Lỗ */
+    background: #2b1b13;
     border-radius: 50%;
-    box-shadow: inset 0 10px 15px black, 0 2px 0 rgba(255,255,255,0.2);
-    overflow: hidden;
+    box-shadow: inset 0 10px 20px black;
+    overflow: hidden; 
+    border: 2px solid #5d4037;
 }
 
+/* --- CHUỘT & THẺ BÀI --- */
 .mole {
-    position: absolute; top: 100%; left: 10%; width: 80%; height: 90%;
-    background: #D2691E; /* Chuột */
-    border-radius: 40% 40% 10% 10%;
-    transition: top 0.15s ease-out;
+    position: absolute; top: 100%; left: 10%; width: 80%; height: 95%;
+    background: #D2691E;
+    border-radius: 45% 45% 10% 10%;
+    transition: top 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
     padding-top: 5px; cursor: pointer;
-    box-shadow: 0 5px 10px rgba(0,0,0,0.5);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
 }
-.mole::before { content: '👀'; font-size: 18px; position: absolute; top: 2px; }
-.mole::after { content: '🐽'; font-size: 14px; position: absolute; top: 18px; }
-.mole.up { top: 10%; }
+.mole::before { content: '👀'; font-size: 20px; position: absolute; top: 5px; }
+.mole::after { content: '🐽'; font-size: 16px; position: absolute; top: 22px; }
 
+/* Chuột ngoi lên */
+.mole.up { top: 0%; } 
+
+/* SỬA LỖI HÌNH ẢNH: CĂN TỪ TRÊN XUỐNG ĐỂ HỞ MẶT */
 .mole-card {
-    width: 90%; height: 55%;
-    background: white; border: 2px solid #fff; border-radius: 8px;
+    width: 120%; 
+    height: 60%; 
+    background: white; border: 3px solid #eee; border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    z-index: 2; margin-top: 35px; /* Vị trí cầm thẻ */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+    z-index: 2; 
+    position: absolute;
+    top: 45%; 
+    left: -10%; 
+    transform: rotate(-3deg);
 }
 .mole-card img { width: 95%; height: 95%; object-fit: contain; pointer-events: none; }
 
-/* BÚA ĐẬP */
+/* BÚA ĐẬP CUTE */
 .hammer {
-    position: absolute; width: 80px; height: 80px; pointer-events: none; z-index: 999;
-    background-image: url('https://img.icons8.com/emoji/96/hammer-emoji.png');
+    position: fixed; 
+    width: 100px; height: 100px; pointer-events: none; 
+    z-index: 100000;
+    /* Dùng file ảnh bạn đã upload */
+    background-image: url('hammer.png'); 
     background-size: contain; background-repeat: no-repeat;
-    transform-origin: bottom right;
-    display: none;
+    transform-origin: bottom right; display: none; filter: drop-shadow(5px 5px 5px rgba(0,0,0,0.3));
 }
 .hammer.active { display: block; animation: hammer-hit 0.15s ease-in; }
 @keyframes hammer-hit {
@@ -197,19 +225,18 @@ body {
     100% { transform: rotate(0deg); }
 }
 
-/* ĐIỂM BAY */
 .floating-text {
-    position: absolute; font-weight: bold; font-size: 24px;
+    position: fixed; font-weight: 900; font-size: 28px;
     pointer-events: none; z-index: 1000;
     animation: floatUp 0.8s ease-out forwards;
-    text-shadow: 0 2px 2px black;
+    text-shadow: 2px 2px 0px black, -2px -2px 0px white;
 }
 @keyframes floatUp {
     0% { opacity: 1; transform: translateY(0) scale(1); }
-    100% { opacity: 0; transform: translateY(-50px) scale(1.5); }
+    100% { opacity: 0; transform: translateY(-60px) scale(1.5); }
 }
 
-.mole.bonked { filter: brightness(1.2) sepia(1) hue-rotate(-50deg) saturate(3); transition: none; }
+.mole.bonked { filter: brightness(1.3) sepia(0.5) hue-rotate(-30deg) saturate(2); transition: none; transform: scale(0.95); }
 </style>
 </head>
 <body>
@@ -256,11 +283,11 @@ body {
             <div id="whack-wrapper" style="display:none;">
                 <div class="hud-row">
                     <div class="wood-sign">
-                        <small style="color:#ddd">TÌM:</small><br>
-                        <span id="target-word-display" class="target-word">...</span>
+                        <small>MỤC TIÊU:</small><br>
+                        <div id="target-word-container"></div> 
                     </div>
-                    <div class="wood-sign" style="background:#27ae60; border-color:#1e8449;">
-                        <small style="color:#ddd">ĐIỂM:</small><br>
+                    <div class="wood-sign">
+                        <small>ĐIỂM SỐ:</small><br>
                         <span id="score-display" class="score-text">0</span>
                     </div>
                 </div>
@@ -282,9 +309,9 @@ body {
                 <button class="btn-action btn-nav" style="width: 60%; border-radius: 30px; font-size: 20px; box-shadow: 0 4px #e67e22; background-color: #e67e22;" onclick="initGame()"> ↻  Chơi lại</button>
             </div>
             <div id="win-modal">
-                <h1 style="color:green; font-size:36px; margin-bottom: 10px;">KẾT THÚC!  🎉 </h1>
-                <h2 style="color:#d35400; font-size:40px; margin: 5px 0;">Điểm: <span id="final-score">0</span></h2>
-                <p id="win-msg" style="font-size:20px; color:#555; margin-bottom: 30px;">Hoàn thành trong 00:00</p>
+                <h1 style="color:green; font-size:36px; margin-bottom: 10px;">HOÀN THÀNH!  🎉 </h1>
+                <h2 style="color:#d35400; font-size:40px; margin: 5px 0;">Tổng điểm: <span id="final-score">0</span></h2>
+                <p id="win-msg" style="font-size:20px; color:#555; margin-bottom: 30px;">Thời gian: 00:00</p>
                 <button class="btn-action btn-nav" style="width:auto; padding: 0 40px;" onclick="initGame()">Chơi lại</button>
                 <br><br>
                 <button class="btn-action btn-listen" style="width:auto; padding: 0 40px;" onclick="nextItem()">Bài Tiếp  ➡ </button>
@@ -293,6 +320,7 @@ body {
     </div>
 
 <script>
+// --- KHỞI TẠO ÂM THANH ---
 const audioWin = new Audio("win.mp3");
 const audioCorrect = new Audio("correct.mp3");
 const audioWrong = new Audio("wrong.mp3");
@@ -351,7 +379,9 @@ const lesson17 = [
     { img: "cry.jpg", speak: "cry", pre: "I", similar: [], parts: [{i:"", t:"cr"}, {i:"aɪ", t:"y"}] },
     { type: "sent", img: "sentence_tiger.jpg", speak: "A tiger bites a kite", parts: [{i:"ə", t:"A"}, {t:" "}, {i:"", t:"t"}, {i:"aɪ", t:"i"}, {i:"", t:"g"}, {i:"ər", t:"er"}, {t:" "}, {i:"", t:"b"}, {i:"aɪ", t:"i"}, {i:"", t:"t"}, {i:"_", t:"e"}, {i:"", t:"s"}, {t:" "}, {i:"ə", t:"a"}, {t:" "}, {i:"", t:"k"}, {i:"aɪ", t:"i"}, {i:"", t:"t"}, {i:"_", t:"e."}] },
     
-    { type: "game", title: "Game Whack-a-Mole", gameType: "mole" } 
+    // GAME RIÊNG
+    { type: "game", title: "Săn Chuột âm /eɪ/", gameType: "mole", phoneme: "eɪ" },
+    { type: "game", title: "Săn Chuột âm /aɪ/", gameType: "mole", phoneme: "aɪ" } 
 ];
 
 let currentData = [];
@@ -366,6 +396,62 @@ let moleLoop = null;
 let moleAudioLoop = null;
 let moles = [];
 let currentScore = 0;
+let isMoleGameActive = false; // Cờ kiểm soát game
+let isAudioAllowed = false; // CỜ QUAN TRỌNG: Kiểm soát âm thanh toàn cục
+let hammerTimeout;
+
+// --- HÀM TẮT HẾT ÂM THANH (QUAN TRỌNG) ---
+// Chạy ngay khi tải trang để chắc chắn không có âm thanh ma
+window.onload = function() {
+    stopAllAudio();
+}
+
+// Hàm này dùng để CẤM TIỆT âm thanh (khi ra Menu hoặc thoát Game về Menu)
+function stopAllAudio() {
+    isMoleGameActive = false; // Tắt cờ game
+    isAudioAllowed = false; // CẤM mọi âm thanh phát ra
+    
+    window.speechSynthesis.cancel();
+    clearInterval(moleAudioLoop);
+    clearTimeout(moleLoop);
+    
+    const allMoles = document.querySelectorAll('.mole');
+    allMoles.forEach(m => m.classList.remove('up', 'bonked'));
+    
+    // Ẩn búa ngay lập tức
+    const hammer = document.getElementById('cursor-hammer');
+    if(hammer) {
+        hammer.classList.remove('active');
+        clearTimeout(hammerTimeout);
+    }
+    
+    moleAudioLoop = null; 
+}
+
+// Hàm này chỉ dừng vòng lặp game/đọc cũ, NHƯNG VẪN CHO PHÉP ĐỌC TỪ MỚI
+// Dùng khi chuyển thẻ bài hoặc chuyển slide
+function gameReset() {
+    isMoleGameActive = false;
+    window.speechSynthesis.cancel();
+    clearInterval(moleAudioLoop);
+    clearTimeout(moleLoop);
+    
+    const allMoles = document.querySelectorAll('.mole');
+    allMoles.forEach(m => m.classList.remove('up', 'bonked'));
+    
+    const hammer = document.getElementById('cursor-hammer');
+    if(hammer) {
+        hammer.classList.remove('active');
+        clearTimeout(hammerTimeout);
+    }
+}
+
+function unlockSpeech() {
+    if ('speechSynthesis' in window) {
+        const u = new SpeechSynthesisUtterance(' '); 
+        window.speechSynthesis.speak(u);
+    }
+}
 
 function preloadImages() {
     try {
@@ -376,10 +462,13 @@ function preloadImages() {
 }
 
 function startLesson(num) {
+    gameReset(); // Reset nhưng KHÔNG CẤM tiếng
+    isAudioAllowed = true; // BẬT CẦU DAO ÂM THANH
+    unlockSpeech(); // Mở khóa âm thanh mobile
+    
     if(num === 15) currentData = lesson15;
     else if(num === 16) currentData = lesson16;
     else if(num === 17) currentData = lesson17;
-    
     idx = 0;
     preloadImages();
     document.getElementById('menu-screen').style.display = 'none';
@@ -388,13 +477,16 @@ function startLesson(num) {
 }
 
 function goHome() {
+    stopAllAudio(); // CẮT ĐỨT ÂM THANH HOÀN TOÀN
     document.getElementById('main-container').style.display = 'none';
     document.getElementById('menu-screen').style.display = 'flex';
-    window.speechSynthesis.cancel();
-    stopMoleGame();
 }
 
 function render(i) {
+    // QUAN TRỌNG: Không gọi stopAllAudio() ở đây vì sẽ làm mất quyền đọc
+    // Chỉ gọi cancel() để dừng từ cũ
+    window.speechSynthesis.cancel(); 
+    
     if(i < 0 || i >= currentData.length) return;
     idx = i;
     const item = currentData[i];
@@ -431,7 +523,7 @@ function render(i) {
             }
         });
         infoDisplay.innerHTML = html;
-        playAudio();
+        // Bỏ dòng playAudio() ở đây để fix lỗi auto-play trên mobile
     }
 }
 
@@ -448,12 +540,13 @@ function playAudio() {
 }
 
 function speak(txt) {
+    if (!isAudioAllowed) return; 
+    
+    window.speechSynthesis.cancel();
     if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
         currentUtterance = new SpeechSynthesisUtterance(txt);
         currentUtterance.lang = 'en-US';
         currentUtterance.rate = 0.9;
-        currentUtterance.onend = function() { currentUtterance = null; }
         window.speechSynthesis.speak(currentUtterance);
     }
 }
@@ -474,6 +567,7 @@ function initGame() {
 
 // --- GAME 1: FLIP ---
 function initFlipGame() {
+    gameReset();
     document.getElementById('tower').style.display = 'flex';
     document.getElementById('whack-wrapper').style.display = 'none';
     const item = currentData[idx];
@@ -551,6 +645,9 @@ function resetFlip() { flipped=false; lock=false; c1=null; c2=null; }
 
 // --- GAME 2: WHACK-A-MOLE PRO 3D ---
 function initMoleGame() {
+    gameReset();
+    isMoleGameActive = true; 
+    
     document.getElementById('tower').style.display = 'none';
     document.getElementById('whack-wrapper').style.display = 'flex';
     document.getElementById('win-modal').style.display = 'none';
@@ -559,32 +656,53 @@ function initMoleGame() {
     sec = 0;
     currentScore = 0;
     updateScore(0);
+
+    const currentGameItem = currentData[idx];
+    const targetPhoneme = currentGameItem.phoneme;
+
+    moleRemainingWords = lesson17.filter(wordItem => {
+        if (!wordItem.img || wordItem.type === 'sent') return false;
+        return wordItem.parts.some(p => p.i.includes(targetPhoneme));
+    }).sort(() => 0.5 - Math.random());
     
-    moleRemainingWords = lesson17.filter(i => i.img && i.type !== 'sent').sort(() => 0.5 - Math.random());
     if (moleRemainingWords.length === 0) return;
     
-    stopMoleGame();
     startTimer();
     nextMoleRound();
 }
 
+function renderTargetWord(item) {
+    let html = '';
+    item.parts.forEach(p => {
+        const ipaHtml = p.i ? p.i : "&nbsp;";
+        html += `<div class="target-char"><div class="target-ipa">${ipaHtml}</div><div class="target-txt">${p.t}</div></div>`;
+    });
+    document.getElementById('target-word-container').innerHTML = html;
+}
+
 function nextMoleRound() {
+    if (!isMoleGameActive) return; 
     if (moleRemainingWords.length === 0) {
         win();
-        stopMoleGame();
         return;
     }
     moleTarget = moleRemainingWords.pop();
-    document.getElementById('target-word-display').innerText = moleTarget.speak.toUpperCase();
+    
+    renderTargetWord(moleTarget);
+    
     speak(moleTarget.speak);
     clearInterval(moleAudioLoop);
-    moleAudioLoop = setInterval(() => { speak(moleTarget.speak); }, 2500);
+    moleAudioLoop = setInterval(() => { 
+        if (isMoleGameActive) speak(moleTarget.speak); 
+        else clearInterval(moleAudioLoop);
+    }, 2500);
     
     const allVocab = [...lesson15, ...lesson16, ...lesson17].filter(i => i.img && i.type !== 'sent');
     peep(allVocab);
 }
 
 function peep(allVocab) {
+    if (!isMoleGameActive) return;
     const time = randomTime(1000, 1800);
     const hole = randomHole(moles);
     let isTarget = Math.random() < 0.4;
@@ -595,21 +713,23 @@ function peep(allVocab) {
     hole.classList.add('up');
     moleLoop = setTimeout(() => {
         hole.classList.remove('up');
-        if (document.getElementById('win-modal').style.display === 'none') peep(allVocab);
+        if (isMoleGameActive && document.getElementById('win-modal').style.display === 'none') peep(allVocab);
     }, time);
 }
 
 function bonk(moleEl, event) {
-    if(!moleEl.classList.contains('up')) return;
+    if(!moleEl.classList.contains('up') || !isMoleGameActive) return;
     
-    spawnHammer(event.pageX, event.pageY);
+    let touchX = event.clientX || event.pageX;
+    let touchY = event.clientY || event.pageY;
+    spawnHammer(touchX, touchY);
     
     const clickedWord = moleEl.dataset.speak;
     if (clickedWord === moleTarget.speak) {
         audioCorrect.play().catch(e=>{});
         moleEl.classList.add('bonked');
         updateScore(100);
-        showFloatingText(event.pageX, event.pageY, "+100", "yellow");
+        showFloatingText(touchX, touchY, "+100", "yellow");
         setTimeout(() => {
             moleEl.classList.remove('up', 'bonked');
             clearTimeout(moleLoop);
@@ -619,17 +739,24 @@ function bonk(moleEl, event) {
         audioWrong.play().catch(e=>{});
         moleEl.classList.remove('up');
         updateScore(-50);
-        showFloatingText(event.pageX, event.pageY, "-50", "red");
+        showFloatingText(touchX, touchY, "-50", "red");
     }
 }
 
 function spawnHammer(x, y) {
     const hammer = document.getElementById('cursor-hammer');
-    hammer.style.left = (x - 40) + 'px';
-    hammer.style.top = (y - 60) + 'px';
+    hammer.style.left = (x - 60) + 'px'; 
+    hammer.style.top = (y - 70) + 'px';
+    
     hammer.classList.remove('active');
-    void hammer.offsetWidth;
+    void hammer.offsetWidth; 
+    
     hammer.classList.add('active');
+    
+    clearTimeout(hammerTimeout);
+    hammerTimeout = setTimeout(() => {
+        hammer.classList.remove('active');
+    }, 150);
 }
 
 function showFloatingText(x, y, text, color) {
@@ -678,6 +805,8 @@ function startTimer() {
 }
 function win() {
     clearInterval(timerInt);
+    gameReset(); // Dừng game vòng lặp
+    isAudioAllowed = true; // Vẫn cho phép âm thanh win
     let timeStr = document.getElementById('timer').innerText;
     document.getElementById('win-msg').innerText = "Thời gian: " + timeStr;
     document.getElementById('final-score').innerText = currentScore;
@@ -687,9 +816,11 @@ function win() {
 }
 function exitGame() {
     clearInterval(timerInt);
-    stopMoleGame();
+    gameReset(); // Dừng game
     document.getElementById('game-screen').style.display = 'none';
     document.getElementById('learning-screen').style.display = 'flex';
+    // Mở lại audio để học tiếp
+    isAudioAllowed = true;
     nav(-1);
 }
 
@@ -787,3 +918,4 @@ function checkResult(heardArray) {
 </script>
 </body>
 </html>
+
